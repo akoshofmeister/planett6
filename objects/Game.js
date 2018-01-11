@@ -212,7 +212,7 @@ function Game(width, height, ctx) {
 
     Game.start = function () {
         Game.isPaused = false;
-        interval = setInterval(Game.round, 50);
+        interval = setInterval(Game.round, 100);
     };
 
     Game.stop = function () {
@@ -259,7 +259,7 @@ function Game(width, height, ctx) {
             }
         }
 
-        for (var i = 0; i < 30; ++i) {
+        for (var i = 0; i < 100; ++i) {
             var mobX = (Math.floor(Math.random() * (80 - 20 + 1)) + 20) * 111;
             var mobY = 5 * 111;
 

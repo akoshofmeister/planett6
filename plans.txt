@@ -1,0 +1,26 @@
+.................
+Dombok generálása
+'''''''''''''''''
+
+Random generálás, nincs típusa sem.
+Random generált magasság, megadható maximummal.
+Random generált szélesség, megadható maximummal.
+Random generált feljáró, a domb baloldala, megszorításokkal.
+Random generákt lejárat, a domb jobboldala, kevesebb megszorításokkal.
+Random generált távolságok a dombok között, megszorításokkal.
+
+.....................
+Szakadékok generálása
+'''''''''''''''''''''
+
+Random pozíció generálás, de jelenleg csak maximum 1 szélességű lehet, az aján nincsen semmi.
+
+...............
+Mozgás javítása
+'''''''''''''''
+
+Pixeles mozgás hozzáadása.
+
+....................
+Szerkezeti javítások
+''''''''''''''''''''

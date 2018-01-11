@@ -20,7 +20,7 @@ function Bullet(image, x, y, ctx, direction) {
         ctx.drawImage(Bullet.image, Bullet.x, Bullet.y);
     }
 
-    var interval = setInterval(move, 75);
+    var interval = setInterval(move, 100);
 
     Bullet.getRealX = function() {
         return Bullet.x / 111;

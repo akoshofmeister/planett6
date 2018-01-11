@@ -1,14 +1,23 @@
-function Human(type, image, x, y) {
-    var Human = {};
-    Human.type = type;
-    Human.width = 111;
-    Human.height = 111;
-    Human.backgroundColor = type == "human" ? "pink" : "black";
-    Human.x = x;
-    Human.y = y;
-    Human.image = image;
-    Human.dead = false;
-    Human.direction = 1;
+function Player(type, image, x, y, sizeX, sizeY) {
+    var Player = {
+        type,
+        image,
+        x,
+        y,
+        sizeX,
+        sizeY,
+        direction: 1,
+        dead: false,
+        moves: []
+    };
+
+    Player.forward = function() {
+
+    }
+
+    var canMove = function() {
+        
+    }
 
     Human.kill = function() {
         Human.dead = true;

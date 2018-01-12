@@ -39,26 +39,7 @@ function Game(width, height, ctx) {
         deathB: new Image()
     }
 
-    Game.images.bg.src = "./images/bg.png";
-    Game.images.player.src = "./images/Fred.png";
-    Game.images.playerB.src = "./images/FredB.png";
-    Game.images.mob.src = "./images/mobB.png";
-    Game.images.mobB.src = "./images/mob.png";
-    Game.images.ground.src = "./images/ground.png";
-    Game.images.groundTop.src = "./images/groundTop.png";
-    Game.images.jump.src = "./images/jump.png";
-    Game.images.jumpB.src = "./images/jumpB.png";
-    Game.images.walk1.src = "./images/walk1.png";
-    Game.images.walk1B.src = "./images/walk1B.png";
-    Game.images.walk2.src = "./images/walk2.png";
-    Game.images.walk2B.src = "./images/walk2B.png";
-    Game.images.walk3.src = "./images/walk3.png";
-    Game.images.walk3B.src = "./images/walk3B.png";
-    Game.images.walk4.src = "./images/walk4.png";
-    Game.images.walk4B.src = "./images/walk4B.png";
-    Game.images.bullet.src = "./images/bullet.png";
-    Game.images.death.src = "./images/death.png";
-    Game.images.deathB.src = "./images/death.png";
+    
 
     Game.draw = function () {
         ctx.clearRect(0, 0, 1473, 888);

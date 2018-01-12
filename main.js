@@ -1,4 +1,4 @@
-var Position = function (width, height, x, y) {
+/* var Position = function (width, height, x, y) {
     return { width, height, x, y };
 }
 
@@ -66,3 +66,9 @@ window.onkeydown = function (e) {
         game && game.jump == 0 && (game.jump = 3);
     }
 }
+ */
+
+var imageLoader = new imageLoader();
+console.log("inditom");
+imageLoader.loadAll();
+console.log("inditottam");

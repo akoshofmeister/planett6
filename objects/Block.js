@@ -1,25 +1,26 @@
-function Block(type, image, pos) {
+function Block(type, image, x, y) {
     var Block = {};
     Block.type = type;
     Block.width = 10;
     Block.height = 10;
-    Block.pos = pos;
+    Block.x = x;
+    Block.y = y;
     Block.image = image;
 
     Block.getRealX = function() {
-        return Block.pos.x / 111;
+        return Block.x / 111;
     }
 
     Block.getRealY = function() {
-        return Block.pos.y / 111;
+        return Block.y / 111;
     }
 
     Block.getX = function() {
-        return Block.pos.x;
+        return Block.x;
     }
 
     Block.getY = function() {
-        return Block.pos.y;
+        return Block.y;
     }
 
     Block.getImage = function() {

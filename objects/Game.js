@@ -19,7 +19,7 @@ function GAME(width, height, ctx) {
         navigator: {lastUpdate: 0, forward: false, backward: false, up: false},
         sizes: {blockWidth: 111, blockHeight: 111, tableWidth: 100, tableHeight: 8},
         movement: {lastUpdate: new Date(), period: 75},
-        gravity: 0.99
+        gravity: 150
     }
 
     GAME.updateImageFrame = function() {
@@ -58,15 +58,7 @@ function GAME(width, height, ctx) {
         var now = new Date();
         var diff = (now - GAME.navigator.lastUpdate) / 1000;
 
-        if(GAME.navigator.forward || GAME.navigator.backward) {
-            GAME.player.direction = GAME.navigator.forward ? 1 : -1;
-        }
-        
-        if(GAME.navigator.up) {
-            GAME.player.jump();
-        }
-
-        GAME.player.move(diff, GAME.navigator.forward || GAME.navigator.backward);
+        GAME.player.move(diff, GAME.navigator);
 
         GAME.navigator.lastUpdate = now;
         GAME.draw();
@@ -100,13 +92,13 @@ function GAME(width, height, ctx) {
                 var type = j > 5 ? "ground" : "sky";
                 type = j == 6 ? "groundTp" : type;
 
-                if(i == 1) {
+                /* if(i == 1) {
                     if(j == 5) {
                         type = "groundTp";
                     } else if(j == 6) {
                         type = "ground";
                     }
-                }
+                } */
 
                 GAME.blocks.push(new Block(type, GAME.imageLoader.get(type), i * GAME.sizes.blockWidth, j * GAME.sizes.blockHeight ));
             }

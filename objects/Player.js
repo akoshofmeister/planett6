@@ -1,75 +1,90 @@
 function Player() {
     var Player = {
-        currentImage: {index: {walk: 0, stand: 1}, image: GAME.imageLoader.get("playerFwStnd0")},
+        currentImage: { index: { walk: 0, stand: 1 }, image: GAME.imageLoader.get("playerFwStnd0") },
         x: 111,
         y: 555,
         direction: 1,
-        speedX: 3 * GAME.sizes.blockWidth,
-        speedY: 0,
-        moved: false,
-        gravity: 0.5
+        maxSpeed: { x: 500, y: 170 },
+        velocity: { x: 0, y: 0 },
+        acceleration: { x: 700, y: 0 },
+        moved: false
     };
 
-    Player.move = function (time, forward) {
-        if(time) {
-            var nextX = this.x;
-            var nextY = this.y + this.speedY * this.gravity;
-
-            var nextGround;
-            for(var i = GAME.normalizeX(nextX) * GAME.sizes.tableHeight; i < GAME.normalizeX(nextX) * GAME.sizes.tableHeight + GAME.sizes.tableHeight - 1; i++) {
-                if(GAME.blocks[i].type == "groundTp") {
-                    nextGround = GAME.blocks[i-1].y;
-                    break;
-                }
-            }
-
-            if(nextY >= nextGround) {
-                nextY = nextGround;
-                this.speedY = 0;
-                this.jumpHeight = 0;
-            } else {
-                !this.speedY && (this.speedY = 10);
-                this.speedY += this.gravity * time;
-
-                if(this.jumpHeight && nextY < this.jumpHeight) {
-                    this.speedY *= -1;
-                }
-            }
-
-            if(forward) {
-                nextX = (this.x + this.direction * time * this.speedX);
-                this.moved = true;
-            }
-
-            if(GAME.blocks[GAME.normalizeX(nextX) * GAME.sizes.tableHeight] /* && GAME.blocks[GAME.normalizeX(nextX) + this.y].passable */) {
-                this.x = nextX;
-                this.y = nextY;
-            }
+    var prev = 0;
+    Player.move = function (time, keys) {
+        if(keys.forward || keys.backward) {
+            this.direction = keys.forward ? 1 : -1;
         }
-    }
 
-    Player.jump = function() {
-        if(!this.speedY) {
-            this.speedY = -10;
-            this.jumpHeight = GAME.normalizeY(this.y) * GAME.sizes.blockHeight - GAME.sizes.blockHeight;
+        if (time) {
+
+            if(keys.up && this.velocity.y == 0) {
+                this.velocity.y = this.maxSpeed.y;
+            }
+
+            if (keys.forward) {
+                if (this.velocity.x < this.maxSpeed.x) {
+                    this.velocity.x = Math.min(this.velocity.x + this.acceleration.x * (this.velocity.x < 0 ? 2 : 1) * time, this.maxSpeed.x);
+                }
+                this.moved = true;
+            } else if (keys.backward) {
+                if (this.velocity.x > -this.maxSpeed.x) {
+                    this.velocity.x = Math.max(this.velocity.x - this.acceleration.x * (this.velocity.x > 0 ? 2 : 1) * time, -this.maxSpeed.x);
+                }
+                this.moved = true;
+            } else {
+                if (this.velocity.x > 0) {
+                    this.velocity.x -= this.acceleration.x * 3 * time;
+
+                    if(this.velocity.x < 0) {
+                        this.velocity.x = 0;
+                    }
+                } else if(this.velocity.x < 0) {
+                    this.velocity.x += this.acceleration.x * 3 * time;
+
+                    if(this.velocity.x > 0) {
+                        this.velocity.x = 0;
+                    }
+                }
+            }
+
+            if(this.velocity.y > 0) {
+                this.velocity.y -= GAME.gravity;
+                if(this.velocity.y < 0) {
+                    this.velocity.y = 0;
+
+                    if(this.y != 555) {
+                        this.velocity.y = -1;
+                    }
+                }
+            } else if (this.velocity.y < 0) {
+                this.velocity.y += GAME.gravity;
+                if(this.y > 555) {
+                    this.velocity.y = 0;
+                    this.y = 555;
+                }
+            }
+
+            this.y -= this.velocity.y ;
+            this.x += this.velocity.x * time;
         }
     }
 
     Player.getMove = function (time) {
-        if(GAME.updateImageFrame()) {
-            if(this.moved) {
+        if (GAME.updateImageFrame()) {
+            if (this.moved) {
                 this.moved = false;
                 this.currentImage.index.stand = -1;
 
-                if(++this.currentImage.index.walk > 3) {
+                if (++this.currentImage.index.walk > 3) {
                     this.currentImage.index.walk = 0;
                 }
-    
+
                 this.currentImage.image = GAME.imageLoader.get((this.direction == 1 ? "playerFwWlk" : "playerBwWlk") + this.currentImage.index.walk);
             } else {
                 this.currentImage.index.walk = -1;
 
-                if(++this.currentImage.index.stand > 3) {
+                if (++this.currentImage.index.stand > 3) {
                     this.currentImage.index.stand = 0;
                 }
 

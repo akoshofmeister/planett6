@@ -19,7 +19,7 @@ function GAME(width, height, ctx) {
         navigator: {lastUpdate: 0, forward: false, backward: false, up: false},
         sizes: {blockWidth: 111, blockHeight: 111, tableWidth: 100, tableHeight: 8},
         movement: {lastUpdate: new Date(), period: 75},
-        gravity: 150
+        gravity: 0.2
     }
 
     GAME.updateImageFrame = function() {
@@ -38,7 +38,8 @@ function GAME(width, height, ctx) {
         var background = GAME.imageLoader.get("background");
         ctx.drawImage(background.image, 0, 0);
 
-        var blocks = _.filter(GAME.blocks, function (block) { return block.getRealX() >= GAME.drawFrom && block.getRealX() <= GAME.drawTo; });
+        var blocks = GAME.blocks.slice(GAME.drawFrom * GAME.sizes.tableHeight, (GAME.drawTo + 2) * GAME.sizes.tableHeight - GAME.drawFrom * GAME.sizes.tableHeight);
+
         blocks.forEach((block) => {
             GAME.ctx.drawImage(block.getImage().image, block.getX() - GAME.drawFrom * GAME.sizes.blockWidth, block.getY());
         });

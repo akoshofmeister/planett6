@@ -4,7 +4,7 @@ function Player() {
         x: 111,
         y: 555,
         direction: 1,
-        maxSpeed: { x: 500, y: 170 },
+        maxSpeed: { x: 500, y: 8 },
         velocity: { x: 0, y: 0 },
         acceleration: { x: 700, y: 0 },
         moved: false
@@ -19,7 +19,7 @@ function Player() {
         if (time) {
 
             if(keys.up && this.velocity.y == 0) {
-                this.velocity.y = this.maxSpeed.y;
+                this.velocity.y = -this.maxSpeed.y;
             }
 
             if (keys.forward) {
@@ -48,47 +48,47 @@ function Player() {
                 }
             }
 
-            if(this.velocity.y > 0) {
-                this.velocity.y -= GAME.gravity;
-                if(this.velocity.y < 0) {
-                    this.velocity.y = 0;
-
-                    if(this.y != 555) {
-                        this.velocity.y = -1;
-                    }
-                }
-            } else if (this.velocity.y < 0) {
+            if(this.velocity.y) {
                 this.velocity.y += GAME.gravity;
-                if(this.y > 555) {
-                    this.velocity.y = 0;
-                    this.y = 555;
-                }
+            }
+            
+            if(this.velocity.y < 0 && this.velocity.y.toFixed(0) > -this.maxSpeed.y*0.15) {
+                this.velocity.y *= -1;
+            } else if (this.velocity.y > 0 && this.y > 555) {
+                this.y = 555;
+                this.velocity.y = 0;
             }
 
-            this.y -= this.velocity.y ;
+            this.y += this.velocity.y;
             this.x += this.velocity.x * time;
         }
     }
 
     Player.getMove = function (time) {
         if (GAME.updateImageFrame()) {
-            if (this.moved) {
-                this.moved = false;
-                this.currentImage.index.stand = -1;
-
-                if (++this.currentImage.index.walk > 3) {
-                    this.currentImage.index.walk = 0;
-                }
-
-                this.currentImage.image = GAME.imageLoader.get((this.direction == 1 ? "playerFwWlk" : "playerBwWlk") + this.currentImage.index.walk);
-            } else {
+            if(this.y != 555) {
                 this.currentImage.index.walk = -1;
-
-                if (++this.currentImage.index.stand > 3) {
-                    this.currentImage.index.stand = 0;
+                this.currentImage.index.stand = -1;
+                this.currentImage.image = GAME.imageLoader.get((this.direction == 1 ? "playerFwJmp" : "playerBwJmp"));
+            } else {
+                if (this.moved) {
+                    this.moved = false;
+                    this.currentImage.index.stand = -1;
+    
+                    if (++this.currentImage.index.walk > 3) {
+                        this.currentImage.index.walk = 0;
+                    }
+    
+                    this.currentImage.image = GAME.imageLoader.get((this.direction == 1 ? "playerFwWlk" : "playerBwWlk") + this.currentImage.index.walk);
+                } else {
+                    this.currentImage.index.walk = -1;
+    
+                    if (++this.currentImage.index.stand > 3) {
+                        this.currentImage.index.stand = 0;
+                    }
+    
+                    this.currentImage.image = GAME.imageLoader.get((this.direction == 1 ? "playerFwStnd" : "playerBwStnd") + this.currentImage.index.stand);
                 }
-
-                this.currentImage.image = GAME.imageLoader.get((this.direction == 1 ? "playerFwStnd" : "playerBwStnd") + this.currentImage.index.stand);
             }
         }
 

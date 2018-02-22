@@ -37,7 +37,7 @@ folytathatja a játékot
 - Bogyó Péter
 
 ### Amit rajzolt
-![alt text](https://github.com/akoshofmeister/planett6/edit/master/images/readme/1.png "Fred megy")
-![alt text](https://github.com/akoshofmeister/planett6/edit/master/images/readme/2.png "Fred ugrik")
-![alt text](https://github.com/akoshofmeister/planett6/edit/master/images/readme/3.png "Játék indítása")
-![alt text](https://github.com/akoshofmeister/planett6/edit/master/images/readme/4.png "Fred és a lények")
+![Fred megy](https://raw.githubusercontent.com/akoshofmeister/planett6/master/images/readme/1.png)
+![Fred ugrik](https://raw.githubusercontent.com/akoshofmeister/planett6/master/images/readme/2.png)
+![Játék indítása](https://raw.githubusercontent.com/akoshofmeister/planett6/master/images/readme/3.png)
+![Fred és a lények](https://raw.githubusercontent.com/akoshofmeister/planett6/master/images/readme/4.png)

@@ -1,7 +1,7 @@
 # T6-os bolygó
 
 ### A játék menete
-Fred, egy valami, akit azért küldtek a T6-os bolygóra, hogy megtisztítsa azt a bennszülött lényektől. 
+Fred, egy fejvadász, akit azért küldtek a T6-os bolygóra, hogy megtisztítsa azt a bennszülött lényektől. 
 
 ### Dolgok, amiket lehet csinálni
 - Meg kell ölni minden szörnyet ahhoz, hogy egy ellenörzőponton tovább tudj menni

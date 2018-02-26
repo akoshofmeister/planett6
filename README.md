@@ -30,7 +30,7 @@ folytathatja a játékot
 ### Akik írják
 - Hofmeister Ákos
 - Molnár Máté
-- Lehet, hogy te vagy az? Jelentkezz!
+- Hugyecz Petra
 - Lehet, hogy te vagy az? Jelentkezz!
 
 ### Aki rajzolta

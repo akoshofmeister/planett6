@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 function Block(type, image, x, y) {
     var Block = {};
     Block.type = type;

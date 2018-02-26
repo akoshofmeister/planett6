@@ -40,3 +40,24 @@ folytathatja a játékot
 ![Fred ugrik](https://raw.githubusercontent.com/akoshofmeister/planett6/master/images/readme/2.png)
 ![Játék indítása](https://raw.githubusercontent.com/akoshofmeister/planett6/master/images/readme/3.png)
 ![Fred és a lények](https://raw.githubusercontent.com/akoshofmeister/planett6/master/images/readme/4.png)
+
+### Parancsok
+``` bash
+# install dependencies
+npm install
+
+# serve with hot reload at localhost:8080
+npm run dev
+
+# build for production with minification
+npm run build
+
+# build for production and view the bundle analyzer report
+npm run build --report
+
+# run unit tests
+npm run unit
+
+# run all tests
+npm test
+```

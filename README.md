@@ -42,6 +42,7 @@ folytathatja a játékot
 ![Fred és a lények](https://raw.githubusercontent.com/akoshofmeister/planett6/master/images/readme/4.png)
 
 ### Parancsok
+
 ``` bash
 # install dependencies
 npm install

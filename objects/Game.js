@@ -41,7 +41,9 @@ function GAME(width, height, ctx) {
         var blocks = GAME.blocks.slice(GAME.drawFrom * GAME.sizes.tableHeight, (GAME.drawTo + 2) * GAME.sizes.tableHeight - GAME.drawFrom * GAME.sizes.tableHeight);
 
         blocks.forEach((block) => {
-            GAME.ctx.drawImage(block.getImage().image, block.getX() - GAME.drawFrom * GAME.sizes.blockWidth, block.getY());
+            if(block.getImage().image) {
+                GAME.ctx.drawImage(block.getImage().image, block.getX() - GAME.drawFrom * GAME.sizes.blockWidth, block.getY());
+            }
         });
 
         var play = GAME.player.getMove();
@@ -91,16 +93,6 @@ function GAME(width, height, ctx) {
         for (var i = 0; i < GAME.sizes.tableWidth; ++i) {
             for (var j = 0; j < GAME.sizes.tableHeight; ++j) {
                 var type = j > 5 ? "ground" : "sky";
-                type = j == 6 ? "groundTp" : type;
-
-                /* if(i == 1) {
-                    if(j == 5) {
-                        type = "groundTp";
-                    } else if(j == 6) {
-                        type = "ground";
-                    }
-                } */
-
                 GAME.blocks.push(new Block(type, GAME.imageLoader.get(type), i * GAME.sizes.blockWidth, j * GAME.sizes.blockHeight ));
             }
         }

@@ -1,6 +1,6 @@
 function Player() {
     var Player = {
-        currentImage: { index: { walk: 0, stand: 1 }, image: GAME.imageLoader.get("playerFwStnd0") },
+        currentImage: { index: { walk: 0, stand: 1 }, image: GAME.imageLoader.get("player", ["Fw","Stnd","0"]) },
         x: 111,
         y: 555,
         direction: 1,
@@ -69,7 +69,7 @@ function Player() {
             if(this.y != 555) {
                 this.currentImage.index.walk = -1;
                 this.currentImage.index.stand = -1;
-                this.currentImage.image = GAME.imageLoader.get((this.direction == 1 ? "playerFwJmp" : "playerBwJmp"));
+                this.currentImage.image = GAME.imageLoader.get("player", [(this.direction == 1 ? "Fw" : "Bw"), "Jmp"]);
             } else {
                 if (this.moved) {
                     this.moved = false;
@@ -79,7 +79,7 @@ function Player() {
                         this.currentImage.index.walk = 0;
                     }
     
-                    this.currentImage.image = GAME.imageLoader.get((this.direction == 1 ? "playerFwWlk" : "playerBwWlk") + this.currentImage.index.walk);
+                    this.currentImage.image = GAME.imageLoader.get("player", [(this.direction == 1 ? "Fw" : "Bw"), "Wlk", this.currentImage.index.walk+""]);
                 } else {
                     this.currentImage.index.walk = -1;
     
@@ -87,7 +87,7 @@ function Player() {
                         this.currentImage.index.stand = 0;
                     }
     
-                    this.currentImage.image = GAME.imageLoader.get((this.direction == 1 ? "playerFwStnd" : "playerBwStnd") + this.currentImage.index.stand);
+                    this.currentImage.image = GAME.imageLoader.get("player", [(this.direction == 1 ? "Fw" : "Bw"), "Stnd", this.currentImage.index.stand+""]);;
                 }
             }
         }

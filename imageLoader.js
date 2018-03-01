@@ -32,9 +32,11 @@ function imageLoader() {
 
     imageLoader.loadAll = function() {
         return new Promise(function(resolve, reject) {
-            Promise.all(_.transform(urls, function(result, url) {
-                result.push(loadImage(url));
-            }, []))
+            Promise.all( 
+                urls.reduce(
+                    (res, url) => { res.push(loadImage(url)); return res; }
+                    , []) 
+            )
             .then(function() {
                 resolve();
             })  
@@ -45,26 +47,24 @@ function imageLoader() {
         })
     }
 
-    imageLoader.get = function(what) {
-        var details = what.trim().split(/^([a-z]+)([A-Z][a-z]*)?([A-Z][a-z]*)?([0-9]*)$/);
-        details.shift();
-        details.pop();
-        switch(details[0]) {
+    imageLoader.get = function(what, details) {
+        details = details instanceof Array ? details : [details];
+        switch(what) {
             case "ground":
-                return groundLoader(details.slice(1));
+                return groundLoader(details);
             case "player":
-                return playerLoader(details.slice(1));
+                return playerLoader(details);
             case "npc":
-                return npcLoader(details.slice(1));
+                return npcLoader(details);
             case "bullet":
-                return bulletLoader(details.slice(1));
+                return bulletLoader(details);
             case "background":
-                return backgroundLoader(details.slice(1));
+                return backgroundLoader(details);
             case "navigation":
-                return navigationLoader(details.slice(1));
+                return navigationLoader(details);
         }
 
-        return {x:0, y:0, image: new Image()};
+        return {x:0, y:0, image: null};
     }
 
     var groundLoader = function(details) {

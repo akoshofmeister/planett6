@@ -9,6 +9,7 @@ function imageLoader() {
         "./images/groundTp.png",
         "./images/bullet.png",
         "./images/player.png",
+        "./images/player2.png"
     ];
 
     var images = {};
@@ -54,6 +55,8 @@ function imageLoader() {
                 return groundLoader(details);
             case "player":
                 return playerLoader(details);
+            case "player2":
+                return playerLoader(details, true)
             case "npc":
                 return npcLoader(details);
             case "bullet":
@@ -80,9 +83,9 @@ function imageLoader() {
         return rO;
     }
 
-    var playerLoader = function(details) {
+    var playerLoader = function(details, player2) {
         var rO = {};
-        rO.image = images.player;
+        rO.image = player2 ? images.player2 : images.player;
         
         switch(details[1]) {
             case "Jmp":

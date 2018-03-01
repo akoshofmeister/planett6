@@ -3,30 +3,29 @@ function GAME(width, height, ctx) {
         width,
         height,
         ctx,
-        blocks: [],
-        mobs: [],
-        direction: 0,
-        player: null,
         drawFrom: 0,
         drawTo: 12,
-        space: 7,
-        minSpace: 2,
         isPaused: false,
-        jump: 0,
-        bullets: [],
 
         imageLodar: null,
-        navigator: {lastUpdate: 0, forward: false, backward: false, up: false},
+        navigator: { "player" : {lastUpdate: 0, forward: false, backward: false, up: false}, "player2": {lastUpdate: 0, forward: false, backward: false, up: false}},
         sizes: {blockWidth: 111, blockHeight: 111, tableWidth: 100, tableHeight: 8},
-        movement: {lastUpdate: new Date(), period: 75},
-        gravity: 0.2
+        movement: {lastUpdate: new Date(), period: 60},
+        gravity: 0.2,
+
+        players: [],
+        blocks: [],
+        npc: [],
+        bullets: [],
+
+        fps: 30
     }
 
-    GAME.updateImageFrame = function() {
+    GAME.updateImageFrame = function(reset) {
         var now = new Date();
 
         if(now - this.movement.lastUpdate >= this.movement.period) {
-            this.movement.lastUpdate = now;
+            reset && (this.movement.lastUpdate = now);
             return true;
         }
 
@@ -46,24 +45,30 @@ function GAME(width, height, ctx) {
             }
         });
 
-        var play = GAME.player.getMove();
+        this.players.forEach((player) => {
+            var play = player.getMove();
+            GAME.ctx.drawImage(play.image.image,
+                play.image.x, play.image.y, 
+                GAME.sizes.blockWidth, 
+                GAME.sizes.blockHeight, 
+                play.x - GAME.drawFrom * GAME.sizes.blockWidth, 
+                play.y, GAME.sizes.blockWidth, 
+                GAME.sizes.blockHeight);
+        })
 
-        GAME.ctx.drawImage(play.image.image,
-                            play.image.x, play.image.y, 
-                            GAME.sizes.blockWidth, 
-                            GAME.sizes.blockHeight, 
-                            play.x - GAME.drawFrom * GAME.sizes.blockWidth, 
-                            play.y, GAME.sizes.blockWidth, 
-                            GAME.sizes.blockHeight);
+        GAME.updateImageFrame(true);
     };
 
     GAME.round = function () {
         var now = new Date();
-        var diff = (now - GAME.navigator.lastUpdate) / 1000;
 
-        GAME.player.move(diff, GAME.navigator);
+        GAME.players.forEach((player) => { 
+            var diff = (now - GAME.navigator[player.player2 ? "player2" : "player"].lastUpdate) / 1000; 
+            player.move(diff, GAME.navigator[player.player2 ? "player2" : "player"]) 
+        });
 
-        GAME.navigator.lastUpdate = now;
+        GAME.navigator.player.lastUpdate = now;
+        GAME.navigator.player2.lastUpdate = now;
         GAME.draw();
     };
 
@@ -79,7 +84,7 @@ function GAME(width, height, ctx) {
 
     GAME.start = function () {
         GAME.isPaused = false;
-        interval = setInterval(GAME.round, 1);
+        interval = setInterval(GAME.round, 1000 / GAME.fps);
     };
 
     GAME.stop = function () {
@@ -99,7 +104,8 @@ function GAME(width, height, ctx) {
     }
 
     var addPlayer = function () {
-        GAME.player = new Player();
+        GAME.players.push(new Player());
+        GAME.players.push(new Player(true));
     }
 
     GAME.create = function () {

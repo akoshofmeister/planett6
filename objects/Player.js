@@ -1,13 +1,15 @@
-function Player() {
+function Player(player2) {
+    var imageType = player2 ? "player2" : "player";
     var Player = {
-        currentImage: { index: { walk: 0, stand: 1 }, image: GAME.imageLoader.get("player", ["Fw","Stnd","0"]) },
+        currentImage: { index: { walk: 0, stand: 1 }, image: GAME.imageLoader.get(imageType, ["Fw","Stnd","0"]) },
         x: 111,
         y: 555,
         direction: 1,
         maxSpeed: { x: 500, y: 8 },
         velocity: { x: 0, y: 0 },
         acceleration: { x: 700, y: 0 },
-        moved: false
+        moved: false,
+        player2: !!player2
     };
 
     var prev = 0;
@@ -18,9 +20,9 @@ function Player() {
 
         if (time) {
 
-            if(keys.up && this.velocity.y == 0) {
+            /* if(keys.up && this.velocity.y == 0) {
                 this.velocity.y = -this.maxSpeed.y;
-            }
+            } */
 
             if (keys.forward) {
                 if (this.velocity.x < this.maxSpeed.x) {
@@ -48,7 +50,7 @@ function Player() {
                 }
             }
 
-            if(this.velocity.y) {
+            /* if(this.velocity.y) {
                 this.velocity.y += GAME.gravity;
             }
             
@@ -57,7 +59,7 @@ function Player() {
             } else if (this.velocity.y > 0 && this.y > 555) {
                 this.y = 555;
                 this.velocity.y = 0;
-            }
+            } */
 
             this.y += this.velocity.y;
             this.x += this.velocity.x * time;
@@ -69,7 +71,7 @@ function Player() {
             if(this.y != 555) {
                 this.currentImage.index.walk = -1;
                 this.currentImage.index.stand = -1;
-                this.currentImage.image = GAME.imageLoader.get("player", [(this.direction == 1 ? "Fw" : "Bw"), "Jmp"]);
+                this.currentImage.image = GAME.imageLoader.get(imageType, [(this.direction == 1 ? "Fw" : "Bw"), "Jmp"]);
             } else {
                 if (this.moved) {
                     this.moved = false;
@@ -79,7 +81,7 @@ function Player() {
                         this.currentImage.index.walk = 0;
                     }
     
-                    this.currentImage.image = GAME.imageLoader.get("player", [(this.direction == 1 ? "Fw" : "Bw"), "Wlk", this.currentImage.index.walk+""]);
+                    this.currentImage.image = GAME.imageLoader.get(imageType, [(this.direction == 1 ? "Fw" : "Bw"), "Wlk", this.currentImage.index.walk+""]);
                 } else {
                     this.currentImage.index.walk = -1;
     
@@ -87,15 +89,15 @@ function Player() {
                         this.currentImage.index.stand = 0;
                     }
     
-                    this.currentImage.image = GAME.imageLoader.get("player", [(this.direction == 1 ? "Fw" : "Bw"), "Stnd", this.currentImage.index.stand+""]);;
+                    this.currentImage.image = GAME.imageLoader.get(imageType, [(this.direction == 1 ? "Fw" : "Bw"), "Stnd", this.currentImage.index.stand+""]);;
                 }
             }
         }
 
         return {
-            x: Player.x,
-            y: Player.y,
-            image: Player.currentImage.image
+            x: this.x,
+            y: this.y,
+            image: this.currentImage.image
         }
     }
 

@@ -16,25 +16,49 @@ window.onkeyup = function (e) {
 
     if (key == 32) {
         GAME && (GAME.isPaused ? GAME.start() : GAME.stop());
-    } else if (key == 39) {
-        GAME.navigator.forward = false;
-    } else if (key == 37) {
-        GAME.navigator.backward = false;
-    } else if (key == 38) {
-        GAME.navigator.up = false;
-    } else if (key == 13) {
-        GAME && GAME.shoot();
     }
+    if (key == 39) {
+        GAME.navigator.player.forward = false;
+    }
+    if (key == 37) {
+        GAME.navigator.player.backward = false;
+    }
+    if (key == 38) {
+        GAME.navigator.player.up = false;
+    }
+
+    if (key == 68) {
+        GAME.navigator.player2.forward = false;
+    }
+    if (key == 65) {
+        GAME.navigator.player2.backward = false;
+    }
+    if (key == 87) {
+        GAME.navigator.player2.up = false;
+    }
+
 }
 
 window.onkeydown = function (e) {
     var key = e.keyCode ? e.keyCode : e.which;
 
     if (key == 39) {
-        GAME.navigator.forward = true;
-    } else if (key == 37) {
-        GAME.navigator.backward = true;
-    } else if (key == 38) {
-        GAME.navigator.up = true;
+        GAME.navigator.player.forward = true;
+    }
+    if (key == 37) {
+        GAME.navigator.player.backward = true;
+    }
+    if (key == 38) {
+        GAME.navigator.player.up = true;
+    }
+
+    if (key == 68) {
+        GAME.navigator.player2.forward = true;
+    }
+    if (key == 65) {
+        GAME.navigator.player2.backward = true;
+    }
+    if (key == 87) {
+        GAME.navigator.player2.up = true;
     }
 }

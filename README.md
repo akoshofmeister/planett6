@@ -31,7 +31,6 @@ folytathatja a játékot
 - Hofmeister Ákos
 - Molnár Máté
 - Hugyecz Petra
-- Lehet, hogy te vagy az? Jelentkezz!
 
 ### Aki rajzolta
 - Bogyó Péter

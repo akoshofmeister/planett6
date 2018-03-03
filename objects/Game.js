@@ -18,7 +18,89 @@ function GAME(width, height, ctx) {
         npc: [],
         bullets: [],
 
-        fps: 30
+        fps: 25
+    }
+
+    GAME.isWrongPosition = function(x, y) {
+        let x2 = this.normalizeX(x + this.sizes.tableWidth);
+        x = this.normalizeX(x);
+        y = this.normalizeY(y);
+
+        if(
+            x != x2 &&
+            this.validPos(x,y) && 
+            this.validPos(x2,y) &&
+            this.blocks[x * this.sizes.tableHeight + y].type != 
+            this.blocks[x2 * this.sizes.tableHeight + y].type
+        ) {
+            if(this.blocks[x * this.sizes.tableHeight + y].type == "sky") {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
+
+        return 0;
+    }
+
+    GAME.getGoodPosition = function(x,y) {
+        let isWrongPosition = this.isWrongPosition(x,y);
+
+        if(isWrongPosition == 1) {
+            return (this.normalizeX(x)+1)*this.sizes.blockWidth;
+        } else if(isWrongPosition == -1) {
+            return this.normalizeX(x)*this.sizes.blockWidth;
+        }
+    }
+
+    GAME.validPos = function(x, y, doNormalization) {
+        if(doNormalization) {
+            x = this.normalizeX(x);
+            y = this.normalizeX(y);
+        }
+
+        return y < this.sizes.tableHeight && !!this.blocks[x * this.sizes.tableHeight + y];
+    }
+
+    GAME.canFall = function(x, y, doNormalization) {
+        x += this.sizes.blockWidth / 2;
+        
+        if(doNormalization) {
+            x = this.normalizeX(x);
+            y = this.normalizeX(y);
+        }
+
+        return this.blocks[x * this.sizes.tableHeight + y + 1].type == "sky";
+    }
+
+    GAME.canGo = function(x, y, forward, doNormalization) {
+        if(doNormalization) {
+            x = this.normalizeX(x);
+            y = this.normalizeX(y);
+        }
+
+        if(forward) {
+            x++;
+        }
+
+        return !!this.blocks[x * this.sizes.tableHeight + y] && this.blocks[x * this.sizes.tableHeight + y].type == "sky";
+    }
+
+    GAME.getGround = function(x, doNormalization) {
+        x += this.sizes.blockWidth / 2;
+
+        if(doNormalization) {
+            x = this.normalizeX(x);
+        }
+
+        var blocks = this.blocks.slice(x * this.sizes.tableHeight, x * this.sizes.tableHeight + this.sizes.tableHeight);
+
+        for(var i in blocks) {
+            //TODO groundTop
+            if(blocks[i].type == "ground") {
+                return blocks[i-1];
+            }
+        }
     }
 
     GAME.updateImageFrame = function(reset) {
@@ -98,6 +180,21 @@ function GAME(width, height, ctx) {
         for (var i = 0; i < GAME.sizes.tableWidth; ++i) {
             for (var j = 0; j < GAME.sizes.tableHeight; ++j) {
                 var type = j > 5 ? "ground" : "sky";
+
+                if(i == 1) {
+                    if(j == 5 || j == 4) {
+                        type = "ground";
+                    }
+                } else if(i == 2) {
+                    if(j == 5 || j == 4) {
+                        type = "ground";
+                    }
+                } else if(i == 4) {
+                    if(j == 5) {
+                        type = "ground";
+                    }
+                }
+
                 GAME.blocks.push(new Block(type, GAME.imageLoader.get(type), i * GAME.sizes.blockWidth, j * GAME.sizes.blockHeight ));
             }
         }
@@ -105,7 +202,7 @@ function GAME(width, height, ctx) {
 
     var addPlayer = function () {
         GAME.players.push(new Player());
-        GAME.players.push(new Player(true));
+        //GAME.players.push(new Player(true));
     }
 
     GAME.create = function () {

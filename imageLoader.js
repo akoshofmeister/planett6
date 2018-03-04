@@ -107,6 +107,7 @@ function imageLoader() {
             break;
         }
 
+        console.log(rO, details);
         return rO;
     }
 

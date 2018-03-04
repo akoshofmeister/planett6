@@ -19,7 +19,7 @@ function GAME(width, height, ctx) {
         npcs: [],
         bullets: [],
 
-        fps: 20
+        fps: 17
     }
 
     GAME.isWrongPosition = function (x, y) {

@@ -18,7 +18,7 @@ function NPC(x, y, direction) {
             this.climb = canClimb;
             this.fixPosClimb.y = this.climb == 1 ? this.y - GAME.sizes.blockHeight : this.y;
 
-            this.fixPosClimb.x = this.x;
+            this.fixPosClimb.x = this.direction == -1 ? this.x - GAME.sizes.blockWidth : this.x;
             return true;
         } else if(canGo) {
             return true;
@@ -78,7 +78,7 @@ function NPC(x, y, direction) {
             } else {
                 this.currentImage.index.walk = -1;
 
-                this.currentImage.image = GAME.imageLoader.get("npc", [(this.direction == 1 ? "forward" : "backward"), "climb"+(this.climb == 1 ? "Up" : "Down"), Math.floor(this.currentImage.index.climb) + ""]);
+                this.currentImage.image = GAME.imageLoader.get("npc", [(this.direction == 1 ? "forward" : "backward"), "climb"+(this.climb == 1 ? "Up" : "Down"), Math.max(Math.floor(this.currentImage.index.climb), 0) + ""]);
             }
         }
 

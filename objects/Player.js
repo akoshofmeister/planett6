@@ -1,7 +1,7 @@
 function Player(player2) {
     var imageType = player2 ? "player2" : "player";
     var Player = {
-        currentImage: { index: { walk: 0, stand: 1 }, image: GAME.imageLoader.get(imageType, ["Fw", "Stnd", "0"]) },
+        currentImage: { index: { walk: 0, stand: 1 }, image: GAME.imageLoader.get(imageType, ["forward", "stand", "0"]) },
         x: (player2 && 222) || 111,
         y: 333,
         direction: 1,
@@ -11,10 +11,6 @@ function Player(player2) {
         moved: false,
         player2: !!player2
     };
-
-    var jump = function () {
-
-    }
 
     var speedUp = function (forward, time) {
         if (forward && this.velocity.x < this.maxSpeed.x) {
@@ -48,7 +44,6 @@ function Player(player2) {
             this.velocity.x = 0;
         }
     }
-
 
     Player.move = function (time, keys) {
         if (keys.forward || keys.backward) {
@@ -101,12 +96,21 @@ function Player(player2) {
             }
         }
     }
+
+    Player.die = function() {
+
+    }
+
+    Player.shoot = function() {
+
+    }
+
     Player.getMove = function (time) {
         if (GAME.updateImageFrame()) {
             if (GAME.canFall(this.x, this.y, true)) {
                 this.currentImage.index.walk = -1;
                 this.currentImage.index.stand = -1;
-                this.currentImage.image = GAME.imageLoader.get(imageType, [(this.direction == 1 ? "Fw" : "Bw"), "Jmp"]);
+                this.currentImage.image = GAME.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "jump"]);
             } else {
                 if (this.moved) {
                     this.moved = false;
@@ -116,7 +120,7 @@ function Player(player2) {
                         this.currentImage.index.walk = 0;
                     }
 
-                    this.currentImage.image = GAME.imageLoader.get(imageType, [(this.direction == 1 ? "Fw" : "Bw"), "Wlk", this.currentImage.index.walk + ""]);
+                    this.currentImage.image = GAME.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "walk", this.currentImage.index.walk + ""]);
                 } else {
                     this.currentImage.index.walk = -1;
 
@@ -124,7 +128,7 @@ function Player(player2) {
                         this.currentImage.index.stand = 0;
                     }
 
-                    this.currentImage.image = GAME.imageLoader.get(imageType, [(this.direction == 1 ? "Fw" : "Bw"), "Stnd", this.currentImage.index.stand + ""]);;
+                    this.currentImage.image = GAME.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "stand", this.currentImage.index.stand + ""]);;
                 }
             }
         }

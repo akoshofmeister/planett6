@@ -1,9 +1,9 @@
-function Bullet(image, x, y, ctx, direction) {
+function Bullet(x, y, direction) {
     var Bullet = {
         x,
         y,
-        image,
-        gone: false
+        direction,
+        destroyed: false
     };
 
     var counter = 5;

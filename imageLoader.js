@@ -4,7 +4,7 @@ function imageLoader() {
 
     var urls = [
         "./images/background.png",
-        /* "./images/npc.png", */
+        "./images/npc.png",
         "./images/ground.png",
         "./images/groundTp.png",
         "./images/bullet.png",
@@ -70,11 +70,51 @@ function imageLoader() {
         return {x:0, y:0, image: null};
     }
 
+    let npcLoader = function(details) {
+        let rO = {};
+        rO.x = 0;
+        rO.y = 0;
+        rO.image = images.npc;
+        
+        switch(details[1]) {
+            case "walk":
+                rO.x = (details[2] || 0) * GAME.sizes.blockWidth;
+                rO.y = (details[0] == "forward" ? 1 : 2) * GAME.sizes.blockHeight;
+                break;
+            case "climbUp":
+                rO.x = (details[2] || 0) * GAME.sizes.blockWidth;
+                rO.x = rO.x == 0 ? 0 : rO.x + details[2] * GAME.sizes.blockWidth;
+                rO.y = (details[0] == "forward" ? 7 : 5) * GAME.sizes.blockHeight;
+                rO.height = 2 * GAME.sizes.blockHeight;
+                rO.width = 2 * GAME.sizes.blockWidth;
+                break;
+            break;
+            case "climbDown":
+                rO.x = (details[2] || 0) * GAME.sizes.blockWidth;
+                rO.x = rO.x == 0 ? 0 : rO.x + details[2] * GAME.sizes.blockWidth;
+                rO.y = (details[0] == "forward" ? 11 : 9) * GAME.sizes.blockHeight;
+                rO.height = 2 * GAME.sizes.blockHeight;
+                rO.width = 2 * GAME.sizes.blockWidth;
+                break;
+            break;
+            case "die":
+                rO.x = (details[2] || 0) * GAME.sizes.blockWidth;
+                rO.y = (details[0] == "forward" ? 4 : 3) * GAME.sizes.blockHeight;
+                break;
+            break;
+            default:
+                rO.x = (details[0] == "forward" ? 1 : 0) * GAME.sizes.blockWidth;
+            break;
+        }
+
+        return rO;
+    }
+
     var groundLoader = function(details) {
         var rO = {};
         rO.x = 0;
         rO.y = 0;
-        if(details[0] == "Tp") {
+        if(details[0] == "top") {
             rO.image = images.groundTp;
         } else {
             rO.image = images.ground;
@@ -88,21 +128,21 @@ function imageLoader() {
         rO.image = player2 ? images.player2 : images.player;
         
         switch(details[1]) {
-            case "Jmp":
+            case "jump":
                 rO.y = 6 * GAME.sizes.blockHeight;
-                rO.x = (details[0] == "Fw" ? 0 : 1) * GAME.sizes.blockWidth;
+                rO.x = (details[0] == "forward" ? 0 : 1) * GAME.sizes.blockWidth;
                 break;
-            case "death":
+            case "die":
                 rO.y = 1 * GAME.sizes.blockHeight,
-                rO.x = (details[0] == "Fw" ? 0 : 1) * GAME.sizes.blockWidth;
+                rO.x = (details[0] == "forward" ? 0 : 1) * GAME.sizes.blockWidth;
                 break;
-            case "Stnd":
+            case "stand":
                 rO.x = (details[2] || 0) * GAME.sizes.blockWidth;
-                rO.y = (details[0] == "Fw" ? 2 : 3) * GAME.sizes.blockHeight;
+                rO.y = (details[0] == "forward" ? 2 : 3) * GAME.sizes.blockHeight;
                 break;
-            case "Wlk":
+            case "walk":
                 rO.x = (details[2] || 0) * GAME.sizes.blockWidth;
-                rO.y = (details[0] == "Fw" ? 4 : 5) * GAME.sizes.blockHeight;
+                rO.y = (details[0] == "forward" ? 4 : 5) * GAME.sizes.blockHeight;
                 break;
         }
         

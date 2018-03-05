@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import HelloWorld from '@/components/HelloWorld';
-import Game from '@/components/game/Game';
+import HelloWorld from '../components/hello/HelloWorld';
+import Game from '../components/game/Game';
 
 Vue.use(Router);
 
@@ -13,9 +13,15 @@ export default new Router({
       component: Game,
     },
     {
-      path: '/',
+      path: '/hello',
       name: 'HelloWorld',
       component: HelloWorld,
     },
+    {
+      path: '/',
+      redirect: {
+        name: 'HelloWorld'
+      }
+    }
   ],
 });

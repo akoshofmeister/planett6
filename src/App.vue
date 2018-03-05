@@ -1,22 +1,27 @@
 <template>
   <div id="app">
+    <app-menu />
     <router-view/>
   </div>
 </template>
 
 <script>
-export default {
-  name: 'App',
-};
+  import AppMenu from './components/app-menu/AppMenu';
+
+  export default {
+    name: 'App',
+    components: { AppMenu }
+  };
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+  html, body {
+    padding: 0;
+    margin: 0;
+  }
+
+  #app {
+    width: 100%;
+    height: 100%;
+  }
 </style>

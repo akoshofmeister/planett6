@@ -1,6 +1,9 @@
 <template>
   <div id="game">
-    <canvas id="gamecanvas" width="1473" height="888">  </canvas>
+    <canvas
+      id="gamecanvas"
+      width="1473"
+      height="888"/>
   </div>
 </template>
 

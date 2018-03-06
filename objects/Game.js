@@ -19,7 +19,7 @@ function GAME(width, height, ctx) {
         npcs: [],
         bullets: [],
 
-        fps: 17
+        fps: 20
     }
 
     GAME.isWrongPosition = function (x, y) {
@@ -167,7 +167,7 @@ function GAME(width, height, ctx) {
                 GAME.sizes.blockHeight);
         })
 
-        this.npcs.forEach((npc) => {
+        this.npcs.filter((npc) => !npc.died).forEach((npc) => {
             npc = npc.getMove();
 
             GAME.ctx.drawImage(npc.image.image,
@@ -196,7 +196,11 @@ function GAME(width, height, ctx) {
         });
 
         GAME.navigator.lastUpdate = now;
-        GAME.draw();
+
+        if(GAME.updateImageFrame()) {
+            GAME.draw();
+        }
+        
     };
 
     GAME.normalizeX = function (x) {
@@ -231,10 +235,14 @@ function GAME(width, height, ctx) {
                         type = GAME.blockTypes.ground;
                     }
                 } else if (i == 2) {
+                    if (j == 5) {
+                        type = GAME.blockTypes.ground;
+                    }
+                } else if (i == 3) {
                     if (j == 5 || j == 4) {
                         type = GAME.blockTypes.ground;
                     }
-                } else if (i == 4) {
+                }else if (i == 4) {
                     if (j == 5) {
                         type = GAME.blockTypes.ground;
                     }
@@ -251,8 +259,8 @@ function GAME(width, height, ctx) {
     }
 
     let addNPCs = function() {
-        //GAME.npcs.push(new NPC(111, 333));
-        GAME.npcs.push(new NPC(666, 555, -1));
+        //GAME.npcs.push(new NPC(555, 555));
+        GAME.npcs.push(new NPC(888, 555, -1));
     }
 
     GAME.create = function () {

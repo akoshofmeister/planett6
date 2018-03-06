@@ -37,6 +37,10 @@ window.onkeyup = function (e) {
         GAME.navigator.player2.up = false;
     }
 
+    if(key == 80) {
+        GAME.npcs[0].die();
+    }
+
 }
 
 window.onkeydown = function (e) {

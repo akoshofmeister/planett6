@@ -1,5 +1,43 @@
 function GAME(width, height, ctx) {
     var GAME = {
+        keys: [
+            {
+                key: 32,
+                fnUp: () => { GAME.isPaused ? GAME.start() : GAME.stop(); }
+            },{
+                key: 39,
+                fnUp: () => { GAME.navigator.player.forward = false; },
+                fnDown: () => { GAME.navigator.player.forward = true; }
+            },{
+                key: 37,
+                fnUp: () => { GAME.navigator.player.backward = false; },
+                fnDown: () => { GAME.navigator.player.backward = true; }
+            }, {
+                key: 38,
+                fnUp: () => { GAME.navigator.player.up = false; },
+                fnDown: () => { GAME.navigator.player.up = true; }
+            },{
+                key: 68,
+                fnUp: () => { GAME.navigator.player2.forward = false; },
+                fnDown: () => { GAME.navigator.player2.forward = true; }
+            },{
+                key: 65,
+                fnUp: () => { GAME.navigator.player2.backward = false; },
+                fnDown: () => { GAME.navigator.player2.backward = true; }
+            },{
+                key: 87,
+                fnUp: () => { GAME.navigator.player2.up = false; },
+                fnDown: () => { GAME.navigator.player2.up = true; }
+            },{
+                key: 16,
+                condition: (e) => e.location == 2,
+                fnDown: () => { GAME.navigator.player1.shoot = true; }
+            },{
+                key: 16,
+                condition: (e) => e.location == 1,
+                fnDown: () => { GAME.navigator.player2.shoot = true; }
+            }
+        ],
         width,
         height,
         ctx,
@@ -11,7 +49,7 @@ function GAME(width, height, ctx) {
         navigator: { "lastUpdate" : Date.now(), "player": { forward: false, backward: false, up: false }, "player2": { forward: false, backward: false, up: false } },
         sizes: { blockWidth: 111, blockHeight: 111, tableWidth: 100, tableHeight: 8 },
         blockTypes: { air: "air", ground: "ground" },
-        movement: { lastUpdate: new Date(), period: 60 },
+        movement: { lastUpdate: new Date(), period: 50 },
         gravity: 0.2,
 
         players: [],
@@ -19,7 +57,7 @@ function GAME(width, height, ctx) {
         npcs: [],
         bullets: [],
 
-        fps: 20
+        fps: 30
     }
 
     GAME.isWrongPosition = function (x, y) {
@@ -86,7 +124,7 @@ function GAME(width, height, ctx) {
             x++;
         }
 
-        return !!this.blocks[x * this.sizes.tableHeight + y] && this.blocks[x * this.sizes.tableHeight + y].type == this.blockTypes.air && !this.canFall(x,y,false);
+        return !!this.blocks[x * this.sizes.tableHeight + y] && this.blocks[x * this.sizes.tableHeight + y].type == this.blockTypes.air;
     }
 
     GAME.canClimb = function (x, y, forward, doNormalization) {
@@ -167,7 +205,7 @@ function GAME(width, height, ctx) {
                 GAME.sizes.blockHeight);
         })
 
-        this.npcs.filter((npc) => !npc.died).forEach((npc) => {
+        this.npcs.forEach((npc) => {
             npc = npc.getMove();
 
             GAME.ctx.drawImage(npc.image.image,
@@ -254,13 +292,33 @@ function GAME(width, height, ctx) {
     }
 
     var addPlayer = function () {
-        //GAME.players.push(new Player());
-        //GAME.players.push(new Player(true));
+        GAME.players.push(new Player());
+        GAME.players.push(new Player(true));
     }
 
     let addNPCs = function() {
-        //GAME.npcs.push(new NPC(555, 555));
+        GAME.npcs.push(new NPC(555, 555));
         GAME.npcs.push(new NPC(888, 555, -1));
+    }
+
+    let createKeyListeners = function() {
+        document.addEventListener("keydown", (e) => {
+            for(let keyEvent of GAME.keys) {
+                if(keyEvent.key == e.keyCode && keyEvent.fnDown && (keyEvent.condition ? keyEvent.condition(e) : true)) {
+                    keyEvent.fnDown();
+                    break;
+                }
+            }
+        })
+
+        document.addEventListener("keyup", (e) => {
+            for(let keyEvent of GAME.keys) {
+                if(keyEvent.key == e.keyCode && keyEvent.fnUp && (keyEvent.condition ? keyEvent.condition(e) : true)) {
+                    keyEvent.fnUp();
+                    break;
+                }
+            }
+        })
     }
 
     GAME.create = function () {
@@ -272,6 +330,7 @@ function GAME(width, height, ctx) {
                         createBlocks();
                         addPlayer();
                         addNPCs();
+                        createKeyListeners();
                         resolve();
                     })
             } catch (err) {

@@ -12,7 +12,7 @@ function NPC(x, y, direction) {
     };
 
     var canGoOrClimb = function () {
-        let canGo = GAME.canGo(this.x, this.y, this.direction == 1, true);
+        let canGo = GAME.canGo(this.x, this.y, this.direction == 1, true) && !GAME.canFall(GAME.normalizeX(this.x + (this.direction == 1 ? 1 : 0) * GAME.sizes.blockWidth), GAME.normalizeY(this.y), false);
         let canClimb = GAME.canClimb(this.x, this.y, this.direction == 1, true);
 
         if (!canGo && canClimb) {
@@ -29,7 +29,7 @@ function NPC(x, y, direction) {
     }
 
     NPC.move = function (time) {
-        if(!this.dying) {
+        if(!this.dead && !this.dying) {
             let c = 0;
 
             if (this.climb == 0) {
@@ -55,46 +55,47 @@ function NPC(x, y, direction) {
 
             this.x += this.velocity.x;
             this.y += this.velocity.y;
-        } else if(this.currentImage.index.death != -1) {
-            if(++this.currentImage.index.death > 14) {
-                this.currentImage.index.death = -1;
-            }
+        } else if(this.dying && ++this.currentImage.index.death > 12) {
+            this.dying = false;
+            this.dead = true;
         }
-
     }
 
     NPC.die = function () {
-        this.died = false;
-        this.dying = true;
-        this.climb = 0;
-        this.currentImage.index.walk = -1;
-        this.currentImage.index.climb = -1;
-        this.currentImage.index.death = 0;
+        if(!this.dead && !this.dying) {
+            this.dying = true;
+            this.climb = 0;
+            this.currentImage.index.walk = -1;
+            this.currentImage.index.climb = -1;
+            this.currentImage.index.death = 0;
+        }
     }
 
     NPC.getMove = function () {
-        if(this.dying) {
+        if(!this.dead && !this.dying) {
+            if (GAME.canFall(this.x, this.y, true) || (!this.moved && !this.climb)) {
+                this.currentImage.index.walk = -1;
+                this.currentImage.index.climb = -1;
+                this.currentImage.image = GAME.imageLoader.get("npc", [(this.direction == 1 ? "forward" : "backward"), "stand"]);
+                this.currentImage.type = "stand";
+            } else if (this.climb) {
+                this.moved = false;
+                this.currentImage.index.walk = -1;
+                this.currentImage.type = "climb";
+                this.currentImage.image = GAME.imageLoader.get("npc", [(this.direction == 1 ? "forward" : "backward"), "climb" + (this.climb == 1 ? "Up" : "Down"), Math.max(Math.floor(this.currentImage.index.climb), 0) + ""]);
+            } else if (this.moved) {
+                this.moved = false;
+                this.currentImage.index.climb = -1;
+    
+                if (++this.currentImage.index.walk > 3) {
+                    this.currentImage.index.walk = 0;
+                }
+                this.currentImage.type = "move";
+                this.currentImage.image = GAME.imageLoader.get("npc", [(this.direction == 1 ? "forward" : "backward"), "walk", this.currentImage.index.walk + ""]);
+            }
+        } else {
             this.currentImage.image = GAME.imageLoader.get("npc", [(this.direction == 1 ? "forward" : "backward"), "die", this.currentImage.index.death]);
             this.currentImage.type = "die";
-        } else if (GAME.canFall(this.x, this.y, true) || (!this.moved && !this.climb)) {
-            this.currentImage.index.walk = -1;
-            this.currentImage.index.climb = -1;
-            this.currentImage.image = GAME.imageLoader.get("npc", [(this.direction == 1 ? "forward" : "backward"), "stand"]);
-            this.currentImage.type = "stand";
-        } else if (this.climb) {
-            this.moved = false;
-            this.currentImage.index.walk = -1;
-            this.currentImage.type = "climb";
-            this.currentImage.image = GAME.imageLoader.get("npc", [(this.direction == 1 ? "forward" : "backward"), "climb" + (this.climb == 1 ? "Up" : "Down"), Math.max(Math.floor(this.currentImage.index.climb), 0) + ""]);
-        } else if (this.moved) {
-            this.moved = false;
-            this.currentImage.index.climb = -1;
-
-            if (++this.currentImage.index.walk > 3) {
-                this.currentImage.index.walk = 0;
-            }
-            this.currentImage.type = "move";
-            this.currentImage.image = GAME.imageLoader.get("npc", [(this.direction == 1 ? "forward" : "backward"), "walk", this.currentImage.index.walk + ""]);
         }
 
         return {

@@ -1,5 +1,6 @@
 function NPC(x, y, direction) {
     let NPC = {
+        type: "npc",
         x: x,
         y: y,
         currentImage: { index: { walk: 0, climb: -1, death: -1 }, image: GAME.imageLoader.get("npc", ["forward", "stand", "0"]), "type": "stand" },
@@ -8,7 +9,7 @@ function NPC(x, y, direction) {
         moved: false,
         climb: 0,
         fixPosClimb: { x: 0, y: 0 },
-        died: false
+        dead: false
     };
 
     var canGoOrClimb = function () {
@@ -61,7 +62,7 @@ function NPC(x, y, direction) {
         }
     }
 
-    NPC.die = function () {
+    NPC.hit = NPC.die = function () {
         if(!this.dead && !this.dying) {
             this.dying = true;
             this.climb = 0;

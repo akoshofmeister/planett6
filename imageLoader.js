@@ -70,6 +70,15 @@ function imageLoader() {
         return {x:0, y:0, image: null};
     }
 
+    let bulletLoader = function(details) {
+        let rO = {};
+        rO.x = (details[1] || 0) * GAME.sizes.blockWidth;
+        rO.y = (details[0] == "forward" ? 0 : 1) * GAME.sizes.blockHeight;
+        rO.image = images.bullet;
+
+        return rO;
+    }
+
     let npcLoader = function(details) {
         let rO = {};
         rO.x = 0;

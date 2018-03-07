@@ -1,6 +1,7 @@
 function Player(player2) {
     var imageType = player2 ? "player2" : "player";
     var Player = {
+        type: "player",
         currentImage: { index: { walk: 0, stand: 1 }, image: GAME.imageLoader.get(imageType, ["forward", "stand", "0"]) },
         x: (player2 && 222) || 111,
         y: 333,
@@ -9,7 +10,10 @@ function Player(player2) {
         velocity: { x: 0, y: 0 },
         acceleration: { x: 700, y: 0 },
         moved: false,
-        player2: !!player2
+        player2: !!player2,
+        canShoot: true,
+        health: 3,
+        dead: false
     };
 
     var speedUp = function (forward, time) {
@@ -46,6 +50,15 @@ function Player(player2) {
     }
 
     Player.move = function (time, keys) {
+        if(keys.shoot) {
+            if(this.canShoot) {
+                this.shoot();
+                this.canShoot = false;
+                
+                setTimeout(() => { this.canShoot = true; }, 500);
+            }
+        }
+
         if (keys.forward || keys.backward) {
             this.direction = keys.forward ? 1 : -1;
         }
@@ -102,34 +115,32 @@ function Player(player2) {
     }
 
     Player.shoot = function() {
-
+        GAME.bullets.push( new Bullet(this.x, this.y, this.direction, this.player2) );
     }
 
     Player.getMove = function (time) {
-        if (GAME.updateImageFrame()) {
-            if (GAME.canFall(this.x, this.y, true)) {
-                this.currentImage.index.walk = -1;
+        if (GAME.canFall(this.x, this.y, true)) {
+            this.currentImage.index.walk = -1;
+            this.currentImage.index.stand = -1;
+            this.currentImage.image = GAME.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "jump"]);
+        } else {
+            if (this.moved) {
+                this.moved = false;
                 this.currentImage.index.stand = -1;
-                this.currentImage.image = GAME.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "jump"]);
-            } else {
-                if (this.moved) {
-                    this.moved = false;
-                    this.currentImage.index.stand = -1;
 
-                    if (++this.currentImage.index.walk > 3) {
-                        this.currentImage.index.walk = 0;
-                    }
-
-                    this.currentImage.image = GAME.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "walk", this.currentImage.index.walk + ""]);
-                } else {
-                    this.currentImage.index.walk = -1;
-
-                    if (++this.currentImage.index.stand > 3) {
-                        this.currentImage.index.stand = 0;
-                    }
-
-                    this.currentImage.image = GAME.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "stand", this.currentImage.index.stand + ""]);;
+                if (++this.currentImage.index.walk > 3) {
+                    this.currentImage.index.walk = 0;
                 }
+
+                this.currentImage.image = GAME.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "walk", this.currentImage.index.walk]);
+            } else {
+                this.currentImage.index.walk = -1;
+
+                if (++this.currentImage.index.stand > 3) {
+                    this.currentImage.index.stand = 0;
+                }
+
+                this.currentImage.image = GAME.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "stand", this.currentImage.index.stand]);
             }
         }
 

@@ -2,7 +2,7 @@ function GAME(width, height, ctx) {
     var GAME = {
         keys: [
             {
-                key: 32,
+                key: 27,
                 fnUp: () => { GAME.isPaused ? GAME.start() : GAME.stop(); }
             },{
                 key: 39,
@@ -30,12 +30,12 @@ function GAME(width, height, ctx) {
                 fnDown: () => { GAME.navigator.player2.up = true; }
             },{
                 key: 16,
-                condition: (e) => e.location == 2,
-                fnDown: () => { GAME.navigator.player1.shoot = true; }
+                fnDown: () => { GAME.navigator.player.shoot = true; },
+                fnUp: () => { GAME.navigator.player.shoot = false;}
             },{
-                key: 16,
-                condition: (e) => e.location == 1,
-                fnDown: () => { GAME.navigator.player2.shoot = true; }
+                key: 32,
+                fnDown: () => { GAME.navigator.player2.shoot = true; },
+                fnUp: () => { GAME.navigator.player2.shoot = false; }
             }
         ],
         width,
@@ -49,7 +49,7 @@ function GAME(width, height, ctx) {
         navigator: { "lastUpdate" : Date.now(), "player": { forward: false, backward: false, up: false }, "player2": { forward: false, backward: false, up: false } },
         sizes: { blockWidth: 111, blockHeight: 111, tableWidth: 100, tableHeight: 8 },
         blockTypes: { air: "air", ground: "ground" },
-        movement: { lastUpdate: new Date(), period: 50 },
+        movement: { lastUpdate: new Date(), period: 60 },
         gravity: 0.2,
 
         players: [],
@@ -57,7 +57,29 @@ function GAME(width, height, ctx) {
         npcs: [],
         bullets: [],
 
-        fps: 30
+        fps: 28
+    }
+
+    GAME.whatIsOn = function(x, y, doNormalization) {
+
+        for(let player of GAME.players) {
+            if((player.x + 10) <= x && x <= (player.x + 101) && player.y <= y && y <= (player.y + GAME.sizes.blockHeight)) {
+                return player;
+            }
+        }
+
+        for(let npc of GAME.npcs.filter(npc => !npc.dead)) {
+            if((npc.x + 25) <= x && x <= (npc.x + 75) && npc.y <= y && y <= (npc.y + GAME.sizes.blockHeight)) {
+                return npc;
+            }
+        }
+
+        if(doNormalization) {
+            x = GAME.normalizeX(x);
+            y = GAME.normalizeX(y);
+        }
+
+        return GAME.blocks[x * GAME.sizes.tableHeight + y];
     }
 
     GAME.isWrongPosition = function (x, y) {
@@ -181,9 +203,8 @@ function GAME(width, height, ctx) {
     }
 
     GAME.draw = function () {
-        ctx.clearRect(0, 0, 1473, 888);
-        var background = GAME.imageLoader.get("background");
-        ctx.drawImage(background.image, 0, 0);
+        GAME.ctx.canvas.width = GAME.ctx.canvas.width;
+        GAME.ctx.drawImage(GAME.imageLoader.get("background").image, 0, 0);
 
         var blocks = GAME.blocks.slice(GAME.drawFrom * GAME.sizes.tableHeight, (GAME.drawTo + 2) * GAME.sizes.tableHeight - GAME.drawFrom * GAME.sizes.tableHeight);
 
@@ -207,7 +228,8 @@ function GAME(width, height, ctx) {
 
         this.npcs.forEach((npc) => {
             npc = npc.getMove();
-
+            /* GAME.ctx.rect(npc.x - GAME.drawFrom * GAME.sizes.blockWidth,npc.y,111,111);
+            GAME.ctx.stroke();  */
             GAME.ctx.drawImage(npc.image.image,
                 npc.image.x, npc.image.y,
                 npc.image.width || GAME.sizes.blockWidth,
@@ -216,6 +238,32 @@ function GAME(width, height, ctx) {
                 npc.y, 
                 npc.image.width || GAME.sizes.blockWidth,
                 npc.image.height || GAME.sizes.blockHeight);
+        })
+
+        let bulletsToDelete = [];
+
+        for(let i = 0; i < this.bullets.length; ++i) {
+            let bullet = this.bullets[i].getMove();
+
+            if(!bullet.destroyed) {
+                /* GAME.ctx.rect(bullet.x - GAME.drawFrom * GAME.sizes.blockWidth,bullet.y,111,111);
+                GAME.ctx.stroke();  */
+
+                GAME.ctx.drawImage(bullet.image.image,
+                    bullet.image.x, bullet.image.y,
+                    bullet.image.width || GAME.sizes.blockWidth,
+                    bullet.image.height || GAME.sizes.blockHeight,
+                    bullet.x - GAME.drawFrom * GAME.sizes.blockWidth,
+                    bullet.y, 
+                    bullet.image.width || GAME.sizes.blockWidth,
+                    bullet.image.height || GAME.sizes.blockHeight);
+            } else {
+                bulletsToDelete.push(i);
+            }
+        }
+
+        bulletsToDelete.forEach((bullet) => {
+            GAME.bullets.splice(bullet, 1);
         })
 
         GAME.updateImageFrame(true);
@@ -231,6 +279,10 @@ function GAME(width, height, ctx) {
 
         GAME.npcs.forEach((npc) => {
             npc.move(diff)
+        });
+
+        GAME.bullets.forEach((bullet) => {
+            bullet.move(diff)
         });
 
         GAME.navigator.lastUpdate = now;
@@ -272,7 +324,7 @@ function GAME(width, height, ctx) {
                     if (j == 5 || j == 4) {
                         type = GAME.blockTypes.ground;
                     }
-                } else if (i == 2) {
+                } /* else if (i == 2) {
                     if (j == 5) {
                         type = GAME.blockTypes.ground;
                     }
@@ -284,6 +336,11 @@ function GAME(width, height, ctx) {
                     if (j == 5) {
                         type = GAME.blockTypes.ground;
                     }
+                } */
+                else if(i == 10) {
+                    if (j == 5 || j == 4) {
+                        type = GAME.blockTypes.ground;
+                    }
                 }
 
                 GAME.blocks.push(new Block(type, GAME.imageLoader.get(type), i * GAME.sizes.blockWidth, j * GAME.sizes.blockHeight));
@@ -292,7 +349,7 @@ function GAME(width, height, ctx) {
     }
 
     var addPlayer = function () {
-        GAME.players.push(new Player());
+        //GAME.players.push(new Player());
         GAME.players.push(new Player(true));
     }
 
@@ -304,7 +361,9 @@ function GAME(width, height, ctx) {
     let createKeyListeners = function() {
         document.addEventListener("keydown", (e) => {
             for(let keyEvent of GAME.keys) {
+                
                 if(keyEvent.key == e.keyCode && keyEvent.fnDown && (keyEvent.condition ? keyEvent.condition(e) : true)) {
+                    (keyEvent.condition ? console.log(keyEvent.condition) : "")
                     keyEvent.fnDown();
                     break;
                 }
@@ -314,6 +373,7 @@ function GAME(width, height, ctx) {
         document.addEventListener("keyup", (e) => {
             for(let keyEvent of GAME.keys) {
                 if(keyEvent.key == e.keyCode && keyEvent.fnUp && (keyEvent.condition ? keyEvent.condition(e) : true)) {
+                    (keyEvent.condition ? console.log(keyEvent.condition) : "")
                     keyEvent.fnUp();
                     break;
                 }

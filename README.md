@@ -1,5 +1,5 @@
 # T6-os bolygó
-
+[![Build Status](https://travis-ci.org/akoshofmeister/planett6.svg?branch=add-vuejs-base)](https://travis-ci.org/akoshofmeister/planett6)
 ### A játék menete
 Fred, egy fejvadász, akit azért küldtek a T6-os bolygóra, hogy megtisztítsa azt a bennszülött lényektől. 
 

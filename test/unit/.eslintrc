@@ -1,9 +1,13 @@
 {
-  "env": { 
+  "env": {
     "mocha": true
   },
-  "globals": { 
+  "globals": {
     "expect": true,
     "sinon": true
+  },
+  "rules": {
+    "vue/script-indent": "off",
+    "import/no-extraneous-dependencies": "off"
   }
 }

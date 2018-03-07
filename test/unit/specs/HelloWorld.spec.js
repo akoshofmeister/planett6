@@ -1,5 +1,5 @@
 import { shallow } from '@vue/test-utils';
-import HelloWorld from 'src/components/HelloWorld';
+import HelloWorld from '@>/components/hello/HelloWorld';
 
 describe('HelloWorld.vue', () => {
   let wrapper;

@@ -1,4 +1,8 @@
 #!/bin/bash
 # Magic deploy script
-zip planett6.zip dist
-curl -F 'data=@planett6.zip;secret=${DEPLOY_SECRET_KEY}' DEPLOY_ADDRESS
+
+echo "Zipping /dist"
+zip -r planett6.zip dist
+
+echo "Uploading zip to server"
+curl --form "fileupload=@planett6.zip" --form secret=$DEPLOY_SECRET_KEY $DEPLOY_ADDRESS

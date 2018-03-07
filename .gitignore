@@ -13,3 +13,6 @@ yarn-error.log*
 *.ntvs*
 *.njsproj
 *.sln
+
+#build output
+planett6.zip

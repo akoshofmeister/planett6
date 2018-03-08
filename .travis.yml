@@ -11,4 +11,4 @@ deploy:
   script: bash deploy.sh
   skip_cleanup: true
   on:
-    branch: add-vuejs-base # should be master after getting the repo together
+    branch: master

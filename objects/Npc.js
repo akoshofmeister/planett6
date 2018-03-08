@@ -9,7 +9,8 @@ function NPC(x, y, direction) {
         moved: false,
         climb: 0,
         fixPosClimb: { x: 0, y: 0 },
-        dead: false
+        dead: false,
+        health: 2
     };
 
     var canGoOrClimb = function () {
@@ -62,7 +63,13 @@ function NPC(x, y, direction) {
         }
     }
 
-    NPC.hit = NPC.die = function () {
+    NPC.hit = function() {
+        if(this.helth != 0 && --this.health == 0) {
+            this.die();
+        }
+    }
+    
+    NPC.die = function () {
         if(!this.dead && !this.dying) {
             this.dying = true;
             this.climb = 0;

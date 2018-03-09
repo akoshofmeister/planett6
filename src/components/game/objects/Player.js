@@ -1,8 +1,9 @@
-function Player(player2) {
+/* eslint-disable */
+export default function (game, player2) {
     var imageType = player2 ? "player2" : "player";
     var Player = {
         type: "player",
-        currentImage: { index: { walk: 0, stand: 1 }, image: GAME.imageLoader.get(imageType, ["forward", "stand", "0"]) },
+        currentImage: { index: { walk: 0, stand: 1 }, image: game.imageLoader.get(imageType, ["forward", "stand", "0"]) },
         x: (player2 && 222) || 111,
         y: 333,
         direction: 1,
@@ -13,7 +14,8 @@ function Player(player2) {
         player2: !!player2,
         canShoot: true,
         health: 3,
-        dead: false
+        dead: false,
+        game: game
     };
 
     var speedUp = function (forward, time) {
@@ -24,7 +26,7 @@ function Player(player2) {
         }
         this.moved = true;
 
-        if (!GAME.validPos(this.x + this.velocity.x * time, this.y, true) || !GAME.canGo(this.x + this.velocity.x * time, this.y, forward, true)) {
+        if (!this.game.validPos(this.x + this.velocity.x * time, this.y, true) || !this.game.canGo(this.x + this.velocity.x * time, this.y, forward, true)) {
             this.velocity.x = 0;
         }
     }
@@ -44,7 +46,7 @@ function Player(player2) {
             }
         }
 
-        if (!GAME.validPos(this.x + this.velocity.x * time, this.y, true) || !GAME.canGo(this.x + this.velocity.x * time, this.y, this.velocity.x > 0, true)) {
+        if (!this.game.validPos(this.x + this.velocity.x * time, this.y, true) || !this.game.canGo(this.x + this.velocity.x * time, this.y, this.velocity.x > 0, true)) {
             this.velocity.x = 0;
         }
     }
@@ -77,7 +79,7 @@ function Player(player2) {
                 slowDown.bind(this)(time);
             }
 
-            let canFall = GAME.canFall(this.x, this.y, true);
+            let canFall = this.game.canFall(this.x, this.y, true);
             if (this.jumping || canFall) {
                 this.velocity.y += 1.7;
             }
@@ -86,17 +88,17 @@ function Player(player2) {
             this.y += this.velocity.y;
 
             if (this.velocity.y > 0 && !canFall) {
-                this.y = GAME.getGround(this.x, true).y;
+                this.y = this.game.getGround(this.x, true).y;
                 this.velocity.y = 0;
                 this.jumping = false;
             }
 
             this.x += this.velocity.x * time;
 
-            let wrongPosition = GAME.isWrongPosition(this.x, this.y, true);
+            let wrongPosition = this.game.isWrongPosition(this.x, this.y, true);
             if ((canFall || this.velocity.x == 0) && wrongPosition) {
-                let goodPos = GAME.getGoodPosition(this.x, this.y);
-                let xToBe = this.x + wrongPosition * GAME.sizes.blockWidth * 0.1;
+                let goodPos = this.game.getGoodPosition(this.x, this.y);
+                let xToBe = this.x + wrongPosition * this.game.sizes.blockWidth * 0.1;
 
                 if (
                     (wrongPosition == 1 && xToBe > goodPos) ||
@@ -115,14 +117,14 @@ function Player(player2) {
     }
 
     Player.shoot = function() {
-        GAME.bullets.push( new Bullet(this.x, this.y, this.direction, this.player2) );
+        this.game.bullets.push( new Bullet(this.x, this.y, this.direction, this.player2) );
     }
 
     Player.getMove = function (time) {
-        if (GAME.canFall(this.x, this.y, true)) {
+        if (this.game.canFall(this.x, this.y, true)) {
             this.currentImage.index.walk = -1;
             this.currentImage.index.stand = -1;
-            this.currentImage.image = GAME.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "jump"]);
+            this.currentImage.image = this.game.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "jump"]);
         } else {
             if (this.moved) {
                 this.moved = false;
@@ -132,7 +134,7 @@ function Player(player2) {
                     this.currentImage.index.walk = 0;
                 }
 
-                this.currentImage.image = GAME.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "walk", this.currentImage.index.walk]);
+                this.currentImage.image = this.game.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "walk", this.currentImage.index.walk]);
             } else {
                 this.currentImage.index.walk = -1;
 
@@ -140,7 +142,7 @@ function Player(player2) {
                     this.currentImage.index.stand = 0;
                 }
 
-                this.currentImage.image = GAME.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "stand", this.currentImage.index.stand]);
+                this.currentImage.image = this.game.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "stand", this.currentImage.index.stand]);
             }
         }
 

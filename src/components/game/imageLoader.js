@@ -1,5 +1,7 @@
-function imageLoader() {
+/* eslint-disable */
+export default function (game) {
     var imageLoader = {
+        game:game
     };
 
     var urls = [
@@ -52,19 +54,19 @@ function imageLoader() {
         details = details instanceof Array ? details : [details];
         switch(what) {
             case "ground":
-                return groundLoader(details);
+                return groundLoader.bind(this)(details);
             case "player":
-                return playerLoader(details);
+                return playerLoader.bind(this)(details);
             case "player2":
-                return playerLoader(details, true)
+                return playerLoader.bind(this)(details, true)
             case "npc":
-                return npcLoader(details);
+                return npcLoader.bind(this)(details);
             case "bullet":
-                return bulletLoader(details);
+                return bulletLoader.bind(this)(details);
             case "background":
-                return backgroundLoader(details);
+                return backgroundLoader.bind(this)(details);
             case "navigation":
-                return navigationLoader(details);
+                return navigationLoader.bind(this)(details);
         }
 
         return {x:0, y:0, image: null};
@@ -72,8 +74,8 @@ function imageLoader() {
 
     let bulletLoader = function(details) {
         let rO = {};
-        rO.x = (details[1] || 0) * GAME.sizes.blockWidth;
-        rO.y = (details[0] == "forward" ? 0 : 1) * GAME.sizes.blockHeight;
+        rO.x = (details[1] || 0) * this.game.sizes.blockWidth;
+        rO.y = (details[0] == "forward" ? 0 : 1) * this.game.sizes.blockHeight;
         rO.image = images.bullet;
 
         return rO;
@@ -87,32 +89,32 @@ function imageLoader() {
         
         switch(details[1]) {
             case "walk":
-                rO.x = (details[2] || 0) * GAME.sizes.blockWidth;
-                rO.y = (details[0] == "forward" ? 1 : 2) * GAME.sizes.blockHeight;
+                rO.x = (details[2] || 0) * this.game.sizes.blockWidth;
+                rO.y = (details[0] == "forward" ? 1 : 2) * this.game.sizes.blockHeight;
                 break;
             case "climbUp":
-                rO.x = (details[2] || 0) * GAME.sizes.blockWidth;
-                rO.x = rO.x == 0 ? 0 : rO.x + details[2] * GAME.sizes.blockWidth;
-                rO.y = (details[0] == "forward" ? 7 : 5) * GAME.sizes.blockHeight;
-                rO.height = 2 * GAME.sizes.blockHeight;
-                rO.width = 2 * GAME.sizes.blockWidth;
+                rO.x = (details[2] || 0) * this.game.sizes.blockWidth;
+                rO.x = rO.x == 0 ? 0 : rO.x + details[2] * this.game.sizes.blockWidth;
+                rO.y = (details[0] == "forward" ? 7 : 5) * this.game.sizes.blockHeight;
+                rO.height = 2 * this.game.sizes.blockHeight;
+                rO.width = 2 * this.game.sizes.blockWidth;
                 break;
             break;
             case "climbDown":
-                rO.x = (details[2] || 0) * GAME.sizes.blockWidth;
-                rO.x = rO.x == 0 ? 0 : rO.x + details[2] * GAME.sizes.blockWidth;
-                rO.y = (details[0] == "forward" ? 11 : 9) * GAME.sizes.blockHeight;
-                rO.height = 2 * GAME.sizes.blockHeight;
-                rO.width = 2 * GAME.sizes.blockWidth;
+                rO.x = (details[2] || 0) * this.game.sizes.blockWidth;
+                rO.x = rO.x == 0 ? 0 : rO.x + details[2] * this.game.sizes.blockWidth;
+                rO.y = (details[0] == "forward" ? 11 : 9) * this.game.sizes.blockHeight;
+                rO.height = 2 * this.game.sizes.blockHeight;
+                rO.width = 2 * this.game.sizes.blockWidth;
                 break;
             break;
             case "die":
-                rO.x = (details[2] || 0) * GAME.sizes.blockWidth;
-                rO.y = (details[0] == "forward" ? 4 : 3) * GAME.sizes.blockHeight;
+                rO.x = (details[2] || 0) * this.game.sizes.blockWidth;
+                rO.y = (details[0] == "forward" ? 4 : 3) * this.game.sizes.blockHeight;
                 break;
             break;
             default:
-                rO.x = (details[0] == "forward" ? 1 : 0) * GAME.sizes.blockWidth;
+                rO.x = (details[0] == "forward" ? 1 : 0) * this.game.sizes.blockWidth;
             break;
         }
 
@@ -138,20 +140,20 @@ function imageLoader() {
         
         switch(details[1]) {
             case "jump":
-                rO.y = 6 * GAME.sizes.blockHeight;
-                rO.x = (details[0] == "forward" ? 0 : 1) * GAME.sizes.blockWidth;
+                rO.y = 6 * this.game.sizes.blockHeight;
+                rO.x = (details[0] == "forward" ? 0 : 1) * this.game.sizes.blockWidth;
                 break;
             case "die":
-                rO.y = 1 * GAME.sizes.blockHeight,
-                rO.x = (details[0] == "forward" ? 0 : 1) * GAME.sizes.blockWidth;
+                rO.y = 1 * this.game.sizes.blockHeight,
+                rO.x = (details[0] == "forward" ? 0 : 1) * this.game.sizes.blockWidth;
                 break;
             case "stand":
-                rO.x = (details[2] || 0) * GAME.sizes.blockWidth;
-                rO.y = (details[0] == "forward" ? 2 : 3) * GAME.sizes.blockHeight;
+                rO.x = (details[2] || 0) * this.game.sizes.blockWidth;
+                rO.y = (details[0] == "forward" ? 2 : 3) * this.game.sizes.blockHeight;
                 break;
             case "walk":
-                rO.x = (details[2] || 0) * GAME.sizes.blockWidth;
-                rO.y = (details[0] == "forward" ? 4 : 5) * GAME.sizes.blockHeight;
+                rO.x = (details[2] || 0) * this.game.sizes.blockWidth;
+                rO.y = (details[0] == "forward" ? 4 : 5) * this.game.sizes.blockHeight;
                 break;
         }
         

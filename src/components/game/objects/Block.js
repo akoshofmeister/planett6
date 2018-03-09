@@ -1,4 +1,5 @@
-function Block(type, image, x, y) {
+/* eslint-disable */
+export default function (game, type, image, x, y) {
     var Block = {};
     Block.type = type;
     Block.width = 10;
@@ -6,6 +7,7 @@ function Block(type, image, x, y) {
     Block.x = x;
     Block.y = y;
     Block.image = image;
+    Block.game = game;
 
     Block.getRealX = function() {
         return Block.x / 111;

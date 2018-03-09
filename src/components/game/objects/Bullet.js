@@ -1,4 +1,5 @@
-function Bullet(x, y, direction, player2) {
+/* eslint-disable */
+export default function (game, x, y, direction, player2) {
     var Bullet = {
         x : x,
         y : y,
@@ -7,16 +8,17 @@ function Bullet(x, y, direction, player2) {
         velocity: { x: 30 },
         movesToLive: 50, 
         currentImage: { index: 0, image: undefined },
-        player2: player2
+        player2: player2,
+        game: game
     };
 
     Bullet.move = function() {
         if(--this.movesToLive >= 0 && !this.destroyed) {
             if(!this.currentImage.image) {
-                this.currentImage.image = GAME.imageLoader.get("bullet", [(this.direction == 1 ? "forward" : "backward"), 0]);
+                this.currentImage.image = this.game.imageLoader.get("bullet", [(this.direction == 1 ? "forward" : "backward"), 0]);
             }
 
-            let whatson = GAME.whatIsOn(this.x + (GAME.sizes.blockWidth / (this.direction == 1 ? 1.4 : 3)), this.y + GAME.sizes.blockHeight / 2 + 5, true);
+            let whatson = this.game.whatIsOn(this.x + (this.game.sizes.blockWidth / (this.direction == 1 ? 1.4 : 3)), this.y + this.game.sizes.blockHeight / 2 + 5, true);
     
             if(whatson) {
                 if(whatson.type == "player" && whatson.player2 != this.player2) {
@@ -44,7 +46,7 @@ function Bullet(x, y, direction, player2) {
     Bullet.getMove = function() {
 
         if(this.destroyed && ++this.currentImage.index <= 4) {
-            this.currentImage.image = GAME.imageLoader.get("bullet", [(this.direction == 1 ? "forward" : "backward"), this.currentImage.index]);
+            this.currentImage.image = this.game.imageLoader.get("bullet", [(this.direction == 1 ? "forward" : "backward"), this.currentImage.index]);
         }
 
         return {

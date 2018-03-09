@@ -1,4 +1,11 @@
-function GAME(width, height, ctx) {
+/* eslint-disable */
+import Bullet from './Bullet';
+import Block from './Block';
+import Npc from './Npc';
+import Player from './Player';
+import imageLoader from '../imageLoader';
+
+export default function (width, height, ctx) {
     var GAME = {
         keys: [
             {
@@ -343,19 +350,19 @@ function GAME(width, height, ctx) {
                     }
                 }
 
-                GAME.blocks.push(new Block(type, GAME.imageLoader.get(type), i * GAME.sizes.blockWidth, j * GAME.sizes.blockHeight));
+                GAME.blocks.push(new Block(GAME, type, GAME.imageLoader.get(type), i * GAME.sizes.blockWidth, j * GAME.sizes.blockHeight));
             }
         }
     }
 
     var addPlayer = function () {
         //GAME.players.push(new Player());
-        GAME.players.push(new Player(true));
+        GAME.players.push(new Player(GAME, true));
     }
 
     let addNPCs = function() {
-        GAME.npcs.push(new NPC(555, 555));
-        GAME.npcs.push(new NPC(888, 555, -1));
+        GAME.npcs.push(new NPC(GAME, 555, 555));
+        GAME.npcs.push(new NPC(GAME, 888, 555, -1));
     }
 
     let createKeyListeners = function() {
@@ -384,9 +391,10 @@ function GAME(width, height, ctx) {
     GAME.create = function () {
         return new Promise((resolve, reject) => {
             try {
-                GAME.imageLoader = new imageLoader();
+                GAME.imageLoader = new imageLoader(GAME);
                 GAME.imageLoader.loadAll()
                     .then(() => {
+                        
                         createBlocks();
                         addPlayer();
                         addNPCs();
@@ -400,4 +408,4 @@ function GAME(width, height, ctx) {
     }
 
     return GAME;
-}
+};

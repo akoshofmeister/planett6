@@ -117,7 +117,7 @@ export default function (game, player2) {
     }
 
     Player.shoot = function() {
-        this.game.bullets.push( new Bullet(this.x, this.y, this.direction, this.player2) );
+        this.game.addBullet(this.x, this.y, this.direction, this.player2);
     }
 
     Player.getMove = function (time) {

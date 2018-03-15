@@ -5,27 +5,32 @@ export default function (game) {
     };
 
     var urls = [
-        "./images/background.png",
-        "./images/npc.png",
-        "./images/ground.png",
-        "./images/groundTp.png",
-        "./images/bullet.png",
-        "./images/player.png",
-        "./images/player2.png"
+        require("./images/background.png"),
+        require("./images/npc.png"),
+        require("./images/ground.png"),
+        require("./images/groundTp.png"),
+        require("./images/bullet.png"),
+        require("./images/player.png"),
+        require("./images/player2.png")
     ];
 
     var images = {};
 
-    var regexToCaptureName = /(^.*[\\\/])(.+)(.{4}$)/;
+    var regexToCaptureName = /(^.*[\\\/])([^.]+)(.*)/;
     var loadImage = function(url) {
         return new Promise(function(resolve, reject) {
             try {
                 var tmp = new Image();
                 tmp.src = url;
-
+                
                 tmp.onload = function() {
+                    console.log(url.replace(regexToCaptureName, "$2"))
                     images[url.replace(regexToCaptureName, "$2")] = tmp;
                     resolve();
+                }
+
+                tmp.onerror = function(obj) {
+                    console.log("Error while loading "+url, obj)
                 }
             } catch (err) {
                 reject(err);
@@ -41,6 +46,7 @@ export default function (game) {
                     , []) 
             )
             .then(function() {
+                console.log("loaded")
                 resolve();
             })  
             .catch(function(err) {

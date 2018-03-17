@@ -372,8 +372,8 @@ export default function (width, height, ctx) {
     }
 
     var addPlayer = function () {
-        //GAME.players.push(new Player());
-        GAME.players.push(new Player(GAME, true, "Ákos"));
+        GAME.players.push(new Player(GAME));
+        GAME.players.push(new Player(GAME, "Ákos"));
     }
 
     let addNPCs = function () {

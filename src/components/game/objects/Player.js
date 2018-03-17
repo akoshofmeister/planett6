@@ -1,22 +1,22 @@
 /* eslint-disable */
-export default function (game, player2, name) {
-    var imageType = player2 ? "player2" : "player";
+export default function (game, name) {
+    var imageType = game.players.length == 1 ? "player2" : "player";
     var Player = {
         type: "player",
         currentImage: { index: { walk: 0, stand: 1 }, image: game.imageLoader.get(imageType, ["forward", "stand", "0"]) },
-        x: (player2 && 222) || 111,
+        x: (game.players.length == 1 && 222) || 111,
         y: 333,
         direction: 1,
         maxSpeed: { x: 500, y: 8 },
         velocity: { x: 0, y: 0 },
         acceleration: { x: 700, y: 0 },
         moved: false,
-        player2: !!player2,
+        player2: game.players.length == 1,
         canShoot: true,
         health: 5,
         dead: false,
         game: game,
-        name: name
+        name: name || "Doe János"
     };
 
     var speedUp = function (forward, time) {

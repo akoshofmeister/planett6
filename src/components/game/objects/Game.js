@@ -228,6 +228,17 @@ export default function (width, height, ctx) {
         this.players.forEach((player) => {
             var play = player.getMove();
 
+            GAME.ctx.fillStyle="white";
+            GAME.ctx.font="17.5px Courier New";
+
+            GAME.ctx.fillText(player.name, player.x + (GAME.sizes.blockWidth - GAME.ctx.measureText(player.name).width) / 2 , player.y - 30);
+
+            var marginLeft = (GAME.sizes.blockWidth - player.health * 20) / 2;
+
+            for(let i = 0; i < player.health; ++i) {
+                GAME.ctx.drawImage(GAME.imageLoader.get("heart").image, 0, 0, 75, 55, player.x + marginLeft + i*20, player.y - 20, 20, 14.6);
+            }
+
             GAME.ctx.drawImage(play.image.image,
                 play.image.x, play.image.y,
                 GAME.sizes.blockWidth,
@@ -332,7 +343,7 @@ export default function (width, height, ctx) {
             for (var j = 0; j < GAME.sizes.tableHeight; ++j) {
                 var type = j > 5 ? GAME.blockTypes.ground : GAME.blockTypes.air;
 
-                if (i == 1) {
+                if (i == 0) {
                     if (j == 5 || j == 4) {
                         type = GAME.blockTypes.ground;
                     }
@@ -349,7 +360,7 @@ export default function (width, height, ctx) {
                         type = GAME.blockTypes.ground;
                     }
                 } */
-                else if (i == 10) {
+                else if (i == 12) {
                     if (j == 5 || j == 4) {
                         type = GAME.blockTypes.ground;
                     }
@@ -362,7 +373,7 @@ export default function (width, height, ctx) {
 
     var addPlayer = function () {
         //GAME.players.push(new Player());
-        GAME.players.push(new Player(GAME, true));
+        GAME.players.push(new Player(GAME, true, "Ákos"));
     }
 
     let addNPCs = function () {

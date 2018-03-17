@@ -1,5 +1,5 @@
 /* eslint-disable */
-export default function (game, player2) {
+export default function (game, player2, name) {
     var imageType = player2 ? "player2" : "player";
     var Player = {
         type: "player",
@@ -13,9 +13,10 @@ export default function (game, player2) {
         moved: false,
         player2: !!player2,
         canShoot: true,
-        health: 3,
+        health: 5,
         dead: false,
-        game: game
+        game: game,
+        name: name
     };
 
     var speedUp = function (forward, time) {
@@ -52,6 +53,14 @@ export default function (game, player2) {
     }
 
     Player.move = function (time, keys) {
+        if(this.dead) {
+            if(this.game.normalizeY(this.y) < this.game.sizes.tableHeight) {
+                this.velocity.y += 3;
+                this.y += this.velocity.y;
+            }
+            return;
+        }
+
         if(keys.shoot) {
             if(this.canShoot) {
                 this.shoot();
@@ -112,7 +121,15 @@ export default function (game, player2) {
         }
     }
 
+    Player.hit = function() {
+        if(this.health != 0 && --this.health == 0) {
+            this.die();
+        }
+    }
+
     Player.die = function() {
+        this.dead = true;
+        this.velocity.y = -30;
 
     }
 
@@ -121,7 +138,11 @@ export default function (game, player2) {
     }
 
     Player.getMove = function (time) {
-        if (this.game.canFall(this.x, this.y, true)) {
+        if(this.dead) {
+            this.currentImage.index.walk = -1;
+            this.currentImage.index.stand = -1;
+            this.currentImage.image = this.game.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "die"]);
+        } else if (this.game.canFall(this.x, this.y, true)) {
             this.currentImage.index.walk = -1;
             this.currentImage.index.stand = -1;
             this.currentImage.image = this.game.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "jump"]);

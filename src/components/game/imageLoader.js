@@ -11,7 +11,8 @@ export default function (game) {
         require("./images/groundTp.png"),
         require("./images/bullet.png"),
         require("./images/player.png"),
-        require("./images/player2.png")
+        require("./images/player2.png"),
+        require("./images/heart.png"),
     ];
 
     var images = {};
@@ -24,7 +25,6 @@ export default function (game) {
                 tmp.src = url;
                 
                 tmp.onload = function() {
-                    console.log(url.replace(regexToCaptureName, "$2"))
                     images[url.replace(regexToCaptureName, "$2")] = tmp;
                     resolve();
                 }
@@ -46,7 +46,6 @@ export default function (game) {
                     , []) 
             )
             .then(function() {
-                console.log("loaded")
                 resolve();
             })  
             .catch(function(err) {
@@ -73,6 +72,8 @@ export default function (game) {
                 return backgroundLoader.bind(this)(details);
             case "navigation":
                 return navigationLoader.bind(this)(details);
+            case "heart":
+                return {x:0, y: 0, image: images.heart};
         }
 
         return {x:0, y:0, image: null};

@@ -67,8 +67,8 @@ export default function (width, height, ctx) {
         fps: 28
     }
 
-    GAME.addBullet = function (x, y, dir, player2) {
-        this.bullets.push(new Bullet(this, x, y, dir, player2));
+    GAME.addBullet = function (player) {
+        this.bullets.push(new Bullet(this, player.x, player.y, player.direction, player));
     }
 
     GAME.whatIsOn = function (x, y, doNormalization) {
@@ -213,6 +213,16 @@ export default function (width, height, ctx) {
         return false;
     }
 
+    let convertNumber = function(number) {
+        let images = [];
+
+        (number+"").split("").forEach(digit => {
+            images.push(GAME.imageLoader.get(digit).image);
+        })
+ 
+        return images;
+    }
+
     GAME.draw = function () {
         GAME.ctx.canvas.width = GAME.ctx.canvas.width;
         GAME.ctx.drawImage(GAME.imageLoader.get("background").image, 0, 0);
@@ -225,18 +235,32 @@ export default function (width, height, ctx) {
             }
         });
 
+        let c = 0;
         this.players.forEach((player) => {
             var play = player.getMove();
 
             GAME.ctx.fillStyle="white";
             GAME.ctx.font="17.5px Courier New";
 
-            GAME.ctx.fillText(player.name, player.x + (GAME.sizes.blockWidth - GAME.ctx.measureText(player.name).width) / 2 , player.y - 30);
+            let marginLeft = c++ * (GAME.ctx.canvas.width - 5 * 42);
 
-            var marginLeft = (GAME.sizes.blockWidth - player.health * 20) / 2;
+            GAME.ctx.fillText(player.name, player.x + (GAME.sizes.blockWidth - GAME.ctx.measureText(player.name).width) / 2 , player.y - 10);
+            GAME.ctx.font="20px Courier New";
+            GAME.ctx.fillText(player.name, marginLeft + 5 , GAME.ctx.canvas.height - 80);
+            
+            let i = 0;
+            for(; i < player.health; ++i) {
+                GAME.ctx.drawImage(GAME.imageLoader.get("heart").image, 0, 0, 75, 55, marginLeft + i * 40, GAME.ctx.canvas.height - 40, 40, 29);
+            }
 
-            for(let i = 0; i < player.health; ++i) {
-                GAME.ctx.drawImage(GAME.imageLoader.get("heart").image, 0, 0, 75, 55, player.x + marginLeft + i*20, player.y - 20, 20, 14.6);
+            for(; i < 5; ++i) {
+                GAME.ctx.drawImage(GAME.imageLoader.get("brokenheart").image, 0, 0, 75, 55, marginLeft + i * 42, GAME.ctx.canvas.height - 35, 40, 29);
+            }
+
+            let numbers = convertNumber(player.killCounter);
+
+            for(i = 0; i < numbers.length; ++i) {
+                GAME.ctx.drawImage(numbers[i], 0, 0, 39, 57, marginLeft + 5 + i * 20, GAME.ctx.canvas.height - 75, 20, 29);                
             }
 
             GAME.ctx.drawImage(play.image.image,
@@ -372,8 +396,8 @@ export default function (width, height, ctx) {
     }
 
     var addPlayer = function () {
-        GAME.players.push(new Player(GAME));
         GAME.players.push(new Player(GAME, "Ákos"));
+        GAME.players.push(new Player(GAME, "Máté"));
     }
 
     let addNPCs = function () {

@@ -1,5 +1,5 @@
 /* eslint-disable */
-export default function (game, x, y, direction, player2) {
+export default function (game, x, y, direction, player) {
     var Bullet = {
         x : x,
         y : y,
@@ -8,8 +8,8 @@ export default function (game, x, y, direction, player2) {
         velocity: { x: 30 },
         movesToLive: 50, 
         currentImage: { index: 0, image: undefined },
-        player2: player2,
-        game: game
+        game: game,
+        player: player
     };
 
     Bullet.move = function() {
@@ -21,17 +21,14 @@ export default function (game, x, y, direction, player2) {
             let whatson = this.game.whatIsOn(this.x + (this.game.sizes.blockWidth / (this.direction == 1 ? 1.4 : 3)), this.y + this.game.sizes.blockHeight / 2 + 5, true);
     
             if(whatson) {
-                if(whatson.type == "player" && whatson.player2 != this.player2) {
-                    console.log("friendlyfire");
-                    this.destroyed = true;
+                if(whatson.type == "player" && whatson != this.player) {
                     whatson.hit && whatson.hit();
+                    destroy.bind(this)();
                 } else if(whatson.type == "npc") {
-                    console.log("npchit");
-                    this.destroyed = true;
                     whatson.hit && whatson.hit();
+                    destroy.bind(this)(whatson.health == 0);
                 } else if(whatson.type == "ground") {
-                    console.log("ground");
-                    this.destroyed = true;
+                    destroy.bind(this)();
                 } else {
                     this.x += this.direction * this.velocity.x;
                 }
@@ -40,6 +37,14 @@ export default function (game, x, y, direction, player2) {
                 this.destroyed = true;
                 this.currentImage.index = 5;
             }
+        }
+    }
+
+    let destroy = function(npcKilled) {
+        this.destroyed = true;
+
+        if(npcKilled) {
+            this.player.npcKilled();
         }
     }
 

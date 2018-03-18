@@ -16,8 +16,13 @@ export default function (game, name) {
         health: 5,
         dead: false,
         game: game,
-        name: name || "Doe János"
+        name: name || "Doe János",
+        killCounter: 178
     };
+
+    Player.npcKilled = function() {
+        this.killCounter++;
+    }
 
     var speedUp = function (forward, time) {
         if (forward && this.velocity.x < this.maxSpeed.x) {
@@ -134,7 +139,7 @@ export default function (game, name) {
     }
 
     Player.shoot = function() {
-        this.game.addBullet(this.x, this.y, this.direction, this.player2);
+        this.game.addBullet(this);
     }
 
     Player.getMove = function (time) {

@@ -13,6 +13,17 @@ export default function (game) {
         require("./images/player.png"),
         require("./images/player2.png"),
         require("./images/heart.png"),
+        require("./images/brokenheart.png"),
+        require("./images/0.png"),
+        require("./images/1.png"),
+        require("./images/2.png"),
+        require("./images/3.png"),
+        require("./images/4.png"),
+        require("./images/5.png"),
+        require("./images/6.png"),
+        require("./images/7.png"),
+        require("./images/8.png"),
+        require("./images/9.png")
     ];
 
     var images = {};
@@ -72,11 +83,9 @@ export default function (game) {
                 return backgroundLoader.bind(this)(details);
             case "navigation":
                 return navigationLoader.bind(this)(details);
-            case "heart":
-                return {x:0, y: 0, image: images.heart};
+            default:
+                return {x:0, y: 0, image: images[what]};
         }
-
-        return {x:0, y:0, image: null};
     }
 
     let bulletLoader = function(details) {

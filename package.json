@@ -13,6 +13,7 @@
     "test:watch": "npm run unit:watch",
     "lint-server": "tslint -c tslint.json 'src/**/*.ts'",
     "build-app": "node build/build.js",
+    "dev-server": "npm-run-all build-server start-server",
     "start-server": "node server/dist/index.js",
     "build-server": "webpack --config server/webpack.config.js",
     "build": "npm-run-all --parallel build-app build-server",

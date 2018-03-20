@@ -1,19 +1,16 @@
 /* eslint-disable no-unused-vars */
 const webpack = require('webpack');
 const path = require('path');
+const nodeExternals = require('webpack-node-externals');
 
 function resolve(dir) {
   return path.join(__dirname, dir);
 }
 
 module.exports = {
-  name: 'server',
+  name: 'server-test',
   target: 'node',
-  entry: [path.join(__dirname, 'src/index.ts')],
-  output: {
-    path: path.join(__dirname, 'dist'),
-    filename: 'index.js'
-  },
+  externals: [nodeExternals()],
   resolve: {
     extensions: ['.ts', '.js']
   },

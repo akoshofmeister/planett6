@@ -47,18 +47,18 @@ folytathatja a játékot
 # install dependencies
 npm install
 
-# serve with hot reload at localhost:8080
-npm run dev
+# run client with hot reload for development 
+npm run dev-app
 
-# build for production with minification
-npm run build
+# build client for production with minification
+npm run build-app
 
-# build for production and view the bundle analyzer report
-npm run build --report
+# run server for development
+npm run dev-server
 
-# run unit tests
-npm run unit
+# build server for production
+npm run build-server
 
-# run all tests
+# run tests
 npm test
 ```

@@ -309,15 +309,17 @@ export default function (width, height, ctx) {
                 GAME.sizes.blockHeight);
         })
 
-        this.npcs.forEach((npc) => {
+        let inViewPort = function(x) {
+            return GAME.draw.from * GAME.sizes.blockWidth <= x && x <= GAME.draw.to * GAME.sizes.blockWidth;
+        }
+
+        this.npcs.filter(npc => inViewPort(npc.x)).forEach((npc) => {
             npc = npc.getMove();
-            /* GAME.ctx.rect(npc.x - GAME.draw.from * GAME.sizes.blockWidth,npc.y,111,111);
-            GAME.ctx.stroke();  */
             GAME.ctx.drawImage(npc.image.image,
                 npc.image.x, npc.image.y,
                 npc.image.width || GAME.sizes.blockWidth,
                 npc.image.height || GAME.sizes.blockHeight,
-                npc.x - GAME.draw.from * GAME.sizes.blockWidth,
+                npc.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff,
                 npc.y,
                 npc.image.width || GAME.sizes.blockWidth,
                 npc.image.height || GAME.sizes.blockHeight);
@@ -329,17 +331,16 @@ export default function (width, height, ctx) {
             let bullet = this.bullets[i].getMove();
 
             if (!bullet.destroyed) {
-                /* GAME.ctx.rect(bullet.x - GAME.draw.from * GAME.sizes.blockWidth,bullet.y,111,111);
-                GAME.ctx.stroke();  */
-
-                GAME.ctx.drawImage(bullet.image.image,
-                    bullet.image.x, bullet.image.y,
-                    bullet.image.width || GAME.sizes.blockWidth,
-                    bullet.image.height || GAME.sizes.blockHeight,
-                    bullet.x - GAME.draw.from * GAME.sizes.blockWidth,
-                    bullet.y,
-                    bullet.image.width || GAME.sizes.blockWidth,
-                    bullet.image.height || GAME.sizes.blockHeight);
+                if(inViewPort(bullet.x)) {
+                    GAME.ctx.drawImage(bullet.image.image,
+                        bullet.image.x, bullet.image.y,
+                        bullet.image.width || GAME.sizes.blockWidth,
+                        bullet.image.height || GAME.sizes.blockHeight,
+                        bullet.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff,
+                        bullet.y,
+                        bullet.image.width || GAME.sizes.blockWidth,
+                        bullet.image.height || GAME.sizes.blockHeight);
+                }
             } else {
                 bulletsToDelete.push(i);
             }

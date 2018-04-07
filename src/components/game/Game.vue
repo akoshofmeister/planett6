@@ -3,7 +3,7 @@
   <div id="game">
     <canvas
       id="gameCanvas"
-      width="1473"
+      width="1554"
       height="888"/>
   </div>
 </template>
@@ -33,5 +33,4 @@
 </script>
 
 <style scoped>
-
 </style>

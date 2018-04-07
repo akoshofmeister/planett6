@@ -48,15 +48,14 @@ export default function (width, height, ctx) {
         width,
         height,
         ctx,
-        drawFrom: 0,
-        drawTo: 12,
+        draw: {from: 20, diff: 0, to: 34},
         isPaused: false,
 
         imageLodar: null,
         navigator: { "lastUpdate": Date.now(), "player": { forward: false, backward: false, up: false }, "player2": { forward: false, backward: false, up: false } },
-        sizes: { blockWidth: 111, blockHeight: 111, tableWidth: 100, tableHeight: 8 },
+        sizes: { blockWidth: 111, blockHeight: 111, tableWidth: 30, tableHeight: 8 },
         blockTypes: { air: "air", ground: "ground" },
-        movement: { lastUpdate: new Date(), period: 60 },
+        movement: { lastUpdate: new Date(), period: 60, block: {minX: 0, maxX: 1000} },
         gravity: 0.2,
 
         players: [],
@@ -125,13 +124,19 @@ export default function (width, height, ctx) {
         }
     }
 
-    GAME.validPos = function (x, y, doNormalization) {
+    GAME.validPos = function (x, y, direction, doNormalization) {
+        let blockingCondition;
+
         if (doNormalization) {
+            blockingCondition = this.movement.block.minX <= x && this.movement.block.maxX >= x;
             x = this.normalizeX(x);
             y = this.normalizeX(y);
+        } else {
+            blockingCondition = this.movement.block.minX <= x*GAME.sizes.blockWidth && this.movement.block.maxX >= x*GAME.sizes.blockWidth;
         }
 
-        return y < this.sizes.tableHeight && !!this.blocks[x * this.sizes.tableHeight + y];
+        console.log(blockingCondition);
+        return y < this.sizes.tableHeight && !!this.blocks[x * this.sizes.tableHeight + y] && blockingCondition;
     }
 
     GAME.canFall = function (x, y, doNormalization) {
@@ -216,24 +221,55 @@ export default function (width, height, ctx) {
     let convertNumber = function(number) {
         let images = [];
 
-        (number+"").split("").forEach(digit => {
-            images.push(GAME.imageLoader.get(digit).image);
-        })
+        (number+"").split("").forEach(digit => images.push(GAME.imageLoader.get(digit).image))
  
         return images;
+    }
+
+    let calcViewport = function() {
+        let minPlayer = {x: Infinity};
+        let maxPlayer = {x: -Infinity};
+        GAME.players.filter(player => !player.dead).forEach(player => {
+            if(player.x < minPlayer.x) {
+                minPlayer = player;
+            }
+
+            if(player.x > maxPlayer.x) {
+                maxPlayer = player;
+            }
+        })
+
+        let avg = (maxPlayer.x + minPlayer.x) / 2;
+        let dist = maxPlayer.x - minPlayer.x;
+
+        if(dist <= 10*GAME.sizes.blockWidth) {
+            GAME.movement.block.minX = Math.max(avg - 5*GAME.sizes.blockWidth, 0);
+            GAME.movement.block.maxX = Math.min(avg + 5*GAME.sizes.blockWidth, GAME.sizes.tableWidth * GAME.sizes.blockWidth);
+        } else {
+            avg = (GAME.movement.block.minX + GAME.movement.block.maxX) / 2;
+        }
+
+        GAME.draw.from = Math.min(Math.max(GAME.normalizeX(avg) - 8, 0), GAME.sizes.tableWidth - 14);
+        GAME.draw.to = Math.min(GAME.normalizeX(avg) + 9, GAME.sizes.tableWidth);
+
+        if(GAME.draw.from == 0) {
+            GAME.draw.to += 8 - GAME.normalizeX(avg);
+        }
+
+        GAME.draw.diff = GAME.sizes.tableWidth - 14 == GAME.draw.from ? 0 : Math.max(avg - 8*(GAME.sizes.blockWidth) - GAME.draw.from * GAME.sizes.blockWidth, 0);
     }
 
     GAME.draw = function () {
         GAME.ctx.canvas.width = GAME.ctx.canvas.width;
         GAME.ctx.drawImage(GAME.imageLoader.get("background").image, 0, 0);
 
-        var blocks = GAME.blocks.slice(GAME.drawFrom * GAME.sizes.tableHeight, (GAME.drawTo + 2) * GAME.sizes.tableHeight - GAME.drawFrom * GAME.sizes.tableHeight);
-
-        blocks.forEach((block) => {
+        calcViewport();
+        for(let i = GAME.draw.from * GAME.sizes.tableHeight; i < GAME.draw.to * GAME.sizes.tableHeight; ++i) {
+            let block = GAME.blocks[i];
             if (block.getImage().image) {
-                GAME.ctx.drawImage(block.getImage().image, block.getX() - GAME.drawFrom * GAME.sizes.blockWidth, block.getY());
+                GAME.ctx.drawImage(block.getImage().image, block.getX() - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff, block.getY());
             }
-        });
+        }
 
         let c = 0;
         this.players.forEach((player) => {
@@ -244,7 +280,7 @@ export default function (width, height, ctx) {
 
             let marginLeft = c++ * (GAME.ctx.canvas.width - 5 * 42);
 
-            GAME.ctx.fillText(player.name, player.x + (GAME.sizes.blockWidth - GAME.ctx.measureText(player.name).width) / 2 , player.y - 10);
+            GAME.ctx.fillText(player.name, (player.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff) + (GAME.sizes.blockWidth - GAME.ctx.measureText(player.name).width) / 2 , player.y - 10);
             GAME.ctx.font="20px Courier New";
             GAME.ctx.fillText(player.name, marginLeft + 5 , GAME.ctx.canvas.height - 80);
             
@@ -267,7 +303,7 @@ export default function (width, height, ctx) {
                 play.image.x, play.image.y,
                 GAME.sizes.blockWidth,
                 GAME.sizes.blockHeight,
-                play.x - GAME.drawFrom * GAME.sizes.blockWidth,
+                play.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff,
                 play.y,
                 GAME.sizes.blockWidth,
                 GAME.sizes.blockHeight);
@@ -275,13 +311,13 @@ export default function (width, height, ctx) {
 
         this.npcs.forEach((npc) => {
             npc = npc.getMove();
-            /* GAME.ctx.rect(npc.x - GAME.drawFrom * GAME.sizes.blockWidth,npc.y,111,111);
+            /* GAME.ctx.rect(npc.x - GAME.draw.from * GAME.sizes.blockWidth,npc.y,111,111);
             GAME.ctx.stroke();  */
             GAME.ctx.drawImage(npc.image.image,
                 npc.image.x, npc.image.y,
                 npc.image.width || GAME.sizes.blockWidth,
                 npc.image.height || GAME.sizes.blockHeight,
-                npc.x - GAME.drawFrom * GAME.sizes.blockWidth,
+                npc.x - GAME.draw.from * GAME.sizes.blockWidth,
                 npc.y,
                 npc.image.width || GAME.sizes.blockWidth,
                 npc.image.height || GAME.sizes.blockHeight);
@@ -293,14 +329,14 @@ export default function (width, height, ctx) {
             let bullet = this.bullets[i].getMove();
 
             if (!bullet.destroyed) {
-                /* GAME.ctx.rect(bullet.x - GAME.drawFrom * GAME.sizes.blockWidth,bullet.y,111,111);
+                /* GAME.ctx.rect(bullet.x - GAME.draw.from * GAME.sizes.blockWidth,bullet.y,111,111);
                 GAME.ctx.stroke();  */
 
                 GAME.ctx.drawImage(bullet.image.image,
                     bullet.image.x, bullet.image.y,
                     bullet.image.width || GAME.sizes.blockWidth,
                     bullet.image.height || GAME.sizes.blockHeight,
-                    bullet.x - GAME.drawFrom * GAME.sizes.blockWidth,
+                    bullet.x - GAME.draw.from * GAME.sizes.blockWidth,
                     bullet.y,
                     bullet.image.width || GAME.sizes.blockWidth,
                     bullet.image.height || GAME.sizes.blockHeight);
@@ -367,11 +403,11 @@ export default function (width, height, ctx) {
             for (var j = 0; j < GAME.sizes.tableHeight; ++j) {
                 var type = j > 5 ? GAME.blockTypes.ground : GAME.blockTypes.air;
 
-                if (i == 0) {
+               /* if (i == 0) {
                     if (j == 5 || j == 4) {
                         type = GAME.blockTypes.ground;
                     }
-                } /* else if (i == 2) {
+                }  else if (i == 2) {
                     if (j == 5) {
                         type = GAME.blockTypes.ground;
                     }
@@ -383,26 +419,31 @@ export default function (width, height, ctx) {
                     if (j == 5) {
                         type = GAME.blockTypes.ground;
                     }
-                } */
+                }
                 else if (i == 12) {
                     if (j == 5 || j == 4) {
                         type = GAME.blockTypes.ground;
                     }
-                }
+                } */
 
+                if(i % 5 == 0 && j == 5) {
+                    type = GAME.blockTypes.ground;
+                }
                 GAME.blocks.push(new Block(GAME, type, GAME.imageLoader.get(type), i * GAME.sizes.blockWidth, j * GAME.sizes.blockHeight));
             }
         }
     }
 
     var addPlayer = function () {
-        GAME.players.push(new Player(GAME, "Ákos"));
-        GAME.players.push(new Player(GAME, "Máté"));
+        GAME.players.push(new Player(GAME));
+        GAME.players.push(new Player(GAME));
     }
 
     let addNPCs = function () {
-        GAME.npcs.push(new NPC(GAME, 555, 555));
-        GAME.npcs.push(new NPC(GAME, 888, 555, -1));
+        /* GAME.npcs.push(new NPC(GAME, 555, 555));
+        GAME.npcs.push(new NPC(GAME, 444, 555));
+        GAME.npcs.push(new NPC(GAME, 666, 555)); 
+        GAME.npcs.push(new NPC(GAME, 888, 555, -1));*/
     }
 
     let createKeyListeners = function () {
@@ -410,7 +451,6 @@ export default function (width, height, ctx) {
             for (let keyEvent of GAME.keys) {
 
                 if (keyEvent.key == e.keyCode && keyEvent.fnDown && (keyEvent.condition ? keyEvent.condition(e) : true)) {
-                    (keyEvent.condition ? console.log(keyEvent.condition) : "")
                     keyEvent.fnDown();
                     break;
                 }
@@ -420,7 +460,6 @@ export default function (width, height, ctx) {
         document.addEventListener("keyup", (e) => {
             for (let keyEvent of GAME.keys) {
                 if (keyEvent.key == e.keyCode && keyEvent.fnUp && (keyEvent.condition ? keyEvent.condition(e) : true)) {
-                    (keyEvent.condition ? console.log(keyEvent.condition) : "")
                     keyEvent.fnUp();
                     break;
                 }

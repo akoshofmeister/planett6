@@ -17,7 +17,8 @@ export default function (game, name) {
         dead: false,
         game: game,
         name: name || "Doe János",
-        killCounter: 0
+        killCounter: 0,
+        hitTimer: new Date()
     };
 
     Player.npcKilled = function() {
@@ -79,6 +80,19 @@ export default function (game, name) {
             this.direction = keys.forward ? 1 : -1;
         }
 
+        let whatsOn = this.game.whatIsOn(this.x + 55.5, this.y, true, true);
+
+        if(whatsOn) {
+            if((whatsOn.type == "npc"&& whatsOn.dead) || whatsOn.type == "fire") {
+                this.hit(true);
+            } else if(whatsOn.type == "spike") {
+                this.health = 1;
+                this.hit();
+            }
+        }
+
+        let canFall = this.game.canFall(this.x, this.y, true);
+
         if (time) {
 
             if (keys.up && this.velocity.y == 0) {
@@ -93,11 +107,9 @@ export default function (game, name) {
                 slowDown.bind(this)(time);
             }
 
-            let canFall = this.game.canFall(this.x, this.y, true);
             if (this.jumping || canFall) {
                 this.velocity.y += 1.7;
             }
-
 
             this.y += this.velocity.y;
 
@@ -126,9 +138,12 @@ export default function (game, name) {
         }
     }
 
-    Player.hit = function() {
-        if(this.health != 0 && --this.health == 0) {
-            this.die();
+    Player.hit = function(useTimer) {
+        if(!useTimer || (Date.now() - this.hitTimer >= 1000)) {
+            this.hitTimer = Date.now();
+            if(this.health != 0 && --this.health == 0) {
+                this.die();
+            }
         }
     }
 

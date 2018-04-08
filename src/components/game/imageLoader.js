@@ -4,39 +4,44 @@ export default function (game) {
         game:game
     };
 
-    var urls = [
-        require("./images/background.png"),
-        require("./images/npc.png"),
-        require("./images/ground.png"),
-        require("./images/groundTp.png"),
-        require("./images/bullet.png"),
-        require("./images/player.png"),
-        require("./images/player2.png"),
-        require("./images/heart.png"),
-        require("./images/brokenheart.png"),
-        require("./images/0.png"),
-        require("./images/1.png"),
-        require("./images/2.png"),
-        require("./images/3.png"),
-        require("./images/4.png"),
-        require("./images/5.png"),
-        require("./images/6.png"),
-        require("./images/7.png"),
-        require("./images/8.png"),
-        require("./images/9.png")
-    ];
+    var urls = {
+        "background": require("./images/background.png"),
+        "npc": require("./images/npc.png"),
+        "ground": require("./images/ground.png"),
+        "groundTp": require("./images/groundTp.png"),
+        "bullet": require("./images/bullet.png"),
+        "player": require("./images/player.png"),
+        "player2": require("./images/player2.png"),
+        "heart": require("./images/heart.png"),
+        "brokenheart": require("./images/brokenheart.png"),
+        "0": require("./images/0.png"),
+        "1": require("./images/1.png"),
+        "2": require("./images/2.png"),
+        "3": require("./images/3.png"),
+        "4": require("./images/4.png"),
+        "5": require("./images/5.png"),
+        "6": require("./images/6.png"),
+        "7": require("./images/7.png"),
+        "8": require("./images/8.png"),
+        "9": require("./images/9.png"),
+        "fire0": require("./images/tuz0.png"),
+        "fire1": require("./images/tuz1.png"),
+        "fire2": require("./images/tuz2.png"),
+        "fire3": require("./images/tuz3.png"),
+        "fire4": require("./images/tuz4.png"),
+        "spike": require("./images/spike.png")
+    };
 
     var images = {};
 
-    var regexToCaptureName = /(^.*[\\\/])([^.]+)(.*)/;
-    var loadImage = function(url) {
+    var loadImage = function(url, name) {
         return new Promise(function(resolve, reject) {
             try {
                 var tmp = new Image();
                 tmp.src = url;
                 
                 tmp.onload = function() {
-                    images[url.replace(regexToCaptureName, "$2")] = tmp;
+                    images[name] = tmp;
                     resolve();
                 }
 
@@ -51,10 +56,15 @@ export default function (game) {
 
     imageLoader.loadAll = function() {
         return new Promise(function(resolve, reject) {
+            let getPromises = function() {
+                let ret = [];
+                for(let name in urls) {
+                    ret.push(loadImage(urls[name], name));
+                }
+                return ret;
+            }
             Promise.all( 
-                urls.reduce(
-                    (res, url) => { res.push(loadImage(url)); return res; }
-                    , []) 
+                getPromises()
             )
             .then(function() {
                 resolve();
@@ -83,9 +93,29 @@ export default function (game) {
                 return backgroundLoader.bind(this)(details);
             case "navigation":
                 return navigationLoader.bind(this)(details);
+            case "fire":
+                return fireLoader.bind(this)(details);
+            case "spike":
+                return spikeLoader.bind(this)(details);
             default:
                 return {x:0, y: 0, image: images[what]};
         }
+    }
+
+    let fireLoader = function(details) {
+        return {
+            x: 0,
+            y: 0,
+            image: images["fire"+details]
+        };
+    }
+
+    let spikeLoader = function(details) {
+        return {
+            x: 0,
+            y: 0,
+            image: images.spike
+        };
     }
 
     let bulletLoader = function(details) {

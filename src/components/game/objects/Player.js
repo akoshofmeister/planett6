@@ -33,7 +33,7 @@ export default function (game, name) {
         }
         this.moved = true;
 
-        if (!this.game.validPos(this.x + this.velocity.x * time, this.y, this.direction, true) || !this.game.canGo(this.x + this.velocity.x * time, this.y, forward, true)) {
+        if (!this.game.validPos(this.x + this.velocity.x * time, this.y, true) || !this.game.canGo(this.x + this.velocity.x * time, this.y, forward, true)) {
             this.velocity.x = 0;
         }
     }
@@ -53,7 +53,7 @@ export default function (game, name) {
             }
         }
 
-        if (!this.game.validPos(this.x + this.velocity.x * time, this.y, this.direction, true) || !this.game.canGo(this.x + this.velocity.x * time, this.y, this.velocity.x > 0, true)) {
+        if (!this.game.validPos(this.x + this.velocity.x * time, this.y, true) || !this.game.canGo(this.x + this.velocity.x * time, this.y, this.velocity.x > 0, true)) {
             this.velocity.x = 0;
         }
     }

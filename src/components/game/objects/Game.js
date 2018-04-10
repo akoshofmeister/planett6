@@ -145,8 +145,6 @@ export default function (width, height, ctx) {
             blockingCondition = this.movement.block.minX <= x*GAME.sizes.blockWidth && this.movement.block.maxX >= x*GAME.sizes.blockWidth;
         }
 
-        blockingCondition = true;
-
         return y < this.sizes.tableHeight && !!this.blocks[x * this.sizes.tableHeight + y] && blockingCondition;
     }
 
@@ -289,7 +287,7 @@ export default function (width, height, ctx) {
         }
 
         let c = 0;
-        this.players.forEach((player) => {
+        this.players.filter(player => !player.dead || GAME.normalizeY(player.y) < GAME.sizes.tableHeight).forEach((player) => {
             var play = player.getMove();
 
             GAME.ctx.fillStyle="white";
@@ -298,6 +296,20 @@ export default function (width, height, ctx) {
             let marginLeft = c++ * (GAME.ctx.canvas.width - 5 * 42);
 
             GAME.ctx.fillText(player.name, (player.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff) + (GAME.sizes.blockWidth - GAME.ctx.measureText(player.name).width) / 2 , player.y - 10);
+
+            GAME.ctx.drawImage(play.image.image,
+                play.image.x, play.image.y,
+                GAME.sizes.blockWidth,
+                GAME.sizes.blockHeight,
+                play.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff,
+                play.y,
+                GAME.sizes.blockWidth,
+                GAME.sizes.blockHeight);
+        })
+
+        c = 0;
+        this.players.forEach(player => {
+            let marginLeft = c++ * (GAME.ctx.canvas.width - 5 * 42);
             GAME.ctx.font="20px Courier New";
             GAME.ctx.fillText(player.name, marginLeft + 5 , GAME.ctx.canvas.height - 80);
             
@@ -315,15 +327,6 @@ export default function (width, height, ctx) {
             for(i = 0; i < numbers.length; ++i) {
                 GAME.ctx.drawImage(numbers[i], 0, 0, 39, 57, marginLeft + 5 + i * 20, GAME.ctx.canvas.height - 75, 20, 29);                
             }
-
-            GAME.ctx.drawImage(play.image.image,
-                play.image.x, play.image.y,
-                GAME.sizes.blockWidth,
-                GAME.sizes.blockHeight,
-                play.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff,
-                play.y,
-                GAME.sizes.blockWidth,
-                GAME.sizes.blockHeight);
         })
 
         let inViewPort = function(x) {
@@ -536,7 +539,7 @@ export default function (width, height, ctx) {
 
     var addPlayer = function () {
         GAME.players.push(new Player(GAME));
-        //GAME.players.push(new Player(GAME));
+        GAME.players.push(new Player(GAME));
     }
 
     let addNPCs = function () {

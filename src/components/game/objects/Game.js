@@ -145,6 +145,11 @@ export default function (width, height, ctx) {
             blockingCondition = this.movement.block.minX <= x*GAME.sizes.blockWidth && this.movement.block.maxX >= x*GAME.sizes.blockWidth;
         }
 
+        if(blockingCondition) {
+            blockingCondition = x < GAME.sizes.tableWidth-2;
+            console.log( x , GAME.sizes.tableWidth-2 );
+        }
+
         return y < this.sizes.tableHeight && !!this.blocks[x * this.sizes.tableHeight + y] && blockingCondition;
     }
 
@@ -275,6 +280,109 @@ export default function (width, height, ctx) {
     }
 
     GAME.draw = function () {
+
+        let inViewPort = function(x) {
+            return GAME.draw.from * GAME.sizes.blockWidth <= x && x <= GAME.draw.to * GAME.sizes.blockWidth;
+        }
+
+        let drawBullets = () => {
+            let bulletsToDelete = [];
+
+            for (let i = 0; i < this.bullets.length; ++i) {
+                let bullet = this.bullets[i].getMove();
+
+                if (!bullet.destroyed) {
+                    if(inViewPort(bullet.x)) {
+                        GAME.ctx.drawImage(bullet.image.image,
+                            bullet.image.x, bullet.image.y,
+                            bullet.image.width || GAME.sizes.blockWidth,
+                            bullet.image.height || GAME.sizes.blockHeight,
+                            bullet.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff,
+                            bullet.y,
+                            bullet.image.width || GAME.sizes.blockWidth,
+                            bullet.image.height || GAME.sizes.blockHeight);
+                    }
+                } else {
+                    bulletsToDelete.push(i);
+                }
+            }
+
+            bulletsToDelete.forEach((bullet) => {
+                GAME.bullets.splice(bullet, 1);
+            })
+        }
+
+        let drawNPCs = () => {
+            this.npcs.filter(npc => inViewPort(npc.x)).forEach((npc) => {
+                npc = npc.getMove();
+                GAME.ctx.drawImage(npc.image.image,
+                    npc.image.x, npc.image.y,
+                    npc.image.width || GAME.sizes.blockWidth,
+                    npc.image.height || GAME.sizes.blockHeight,
+                    npc.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff,
+                    npc.y,
+                    npc.image.width || GAME.sizes.blockWidth,
+                    npc.image.height || GAME.sizes.blockHeight);
+            })
+        }
+
+        let peopleCounter = 0;
+        let drawPeople = players => {
+            if(players.length) {
+                GAME.ctx.fillStyle="white";
+                players.filter(player => !player.dead || GAME.normalizeY(player.y) < GAME.sizes.tableHeight).forEach((player) => {
+                    var play = player.getMove();
+                    GAME.ctx.font="17.5px Courier New";
+
+                    GAME.ctx.fillText(player.name, (player.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff) + (GAME.sizes.blockWidth - GAME.ctx.measureText(player.name).width) / 2 , player.y - 10);
+
+                    GAME.ctx.drawImage(play.image.image,
+                        play.image.x, play.image.y,
+                        GAME.sizes.blockWidth,
+                        GAME.sizes.blockHeight,
+                        play.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff,
+                        play.y,
+                        GAME.sizes.blockWidth,
+                        GAME.sizes.blockHeight);
+                })
+
+                players.forEach(player => {
+                    let marginLeft = peopleCounter++ * (GAME.ctx.canvas.width - 5 * 42);
+                    GAME.ctx.font="20px Courier New";
+                    GAME.ctx.fillText(player.name, marginLeft + 5 , GAME.ctx.canvas.height - 80);
+                    
+                    let i = 0;
+                    for(; i < player.health; ++i) {
+                        GAME.ctx.drawImage(GAME.imageLoader.get("heart").image, 0, 0, 75, 55, marginLeft + i * 40, GAME.ctx.canvas.height - 40, 40, 29);
+                    }
+
+                    for(; i < 5; ++i) {
+                        GAME.ctx.drawImage(GAME.imageLoader.get("brokenheart").image, 0, 0, 75, 55, marginLeft + i * 42, GAME.ctx.canvas.height - 35, 40, 29);
+                    }
+
+                    let numbers = convertNumber(player.killCounter);
+
+                    for(i = 0; i < numbers.length; ++i) {
+                        GAME.ctx.drawImage(numbers[i], 0, 0, 39, 57, marginLeft + 5 + i * 20, GAME.ctx.canvas.height - 75, 20, 29);                
+                    }
+                })
+            }
+        }
+
+        let drawOthers = () => {
+            this.others.forEach(other => {
+                other = other.getMove();
+                GAME.ctx.drawImage(other.image.image,
+                    other.image.x, other.image.y,
+                    other.image.width || GAME.sizes.blockWidth,
+                    other.image.height || GAME.sizes.blockHeight,
+                    other.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff,
+                    other.y,
+                    other.image.width || GAME.sizes.blockWidth,
+                    other.image.height || GAME.sizes.blockHeight);
+            })
+        }
+
         GAME.ctx.canvas.width = GAME.ctx.canvas.width;
         GAME.ctx.drawImage(GAME.imageLoader.get("background").image, 0, 0);
 
@@ -286,101 +394,11 @@ export default function (width, height, ctx) {
             }
         }
 
-        let c = 0;
-        this.players.filter(player => !player.dead || GAME.normalizeY(player.y) < GAME.sizes.tableHeight).forEach((player) => {
-            var play = player.getMove();
-
-            GAME.ctx.fillStyle="white";
-            GAME.ctx.font="17.5px Courier New";
-
-            let marginLeft = c++ * (GAME.ctx.canvas.width - 5 * 42);
-
-            GAME.ctx.fillText(player.name, (player.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff) + (GAME.sizes.blockWidth - GAME.ctx.measureText(player.name).width) / 2 , player.y - 10);
-
-            GAME.ctx.drawImage(play.image.image,
-                play.image.x, play.image.y,
-                GAME.sizes.blockWidth,
-                GAME.sizes.blockHeight,
-                play.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff,
-                play.y,
-                GAME.sizes.blockWidth,
-                GAME.sizes.blockHeight);
-        })
-
-        c = 0;
-        this.players.forEach(player => {
-            let marginLeft = c++ * (GAME.ctx.canvas.width - 5 * 42);
-            GAME.ctx.font="20px Courier New";
-            GAME.ctx.fillText(player.name, marginLeft + 5 , GAME.ctx.canvas.height - 80);
-            
-            let i = 0;
-            for(; i < player.health; ++i) {
-                GAME.ctx.drawImage(GAME.imageLoader.get("heart").image, 0, 0, 75, 55, marginLeft + i * 40, GAME.ctx.canvas.height - 40, 40, 29);
-            }
-
-            for(; i < 5; ++i) {
-                GAME.ctx.drawImage(GAME.imageLoader.get("brokenheart").image, 0, 0, 75, 55, marginLeft + i * 42, GAME.ctx.canvas.height - 35, 40, 29);
-            }
-
-            let numbers = convertNumber(player.killCounter);
-
-            for(i = 0; i < numbers.length; ++i) {
-                GAME.ctx.drawImage(numbers[i], 0, 0, 39, 57, marginLeft + 5 + i * 20, GAME.ctx.canvas.height - 75, 20, 29);                
-            }
-        })
-
-        let inViewPort = function(x) {
-            return GAME.draw.from * GAME.sizes.blockWidth <= x && x <= GAME.draw.to * GAME.sizes.blockWidth;
-        }
-
-        this.npcs.filter(npc => inViewPort(npc.x)).forEach((npc) => {
-            npc = npc.getMove();
-            GAME.ctx.drawImage(npc.image.image,
-                npc.image.x, npc.image.y,
-                npc.image.width || GAME.sizes.blockWidth,
-                npc.image.height || GAME.sizes.blockHeight,
-                npc.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff,
-                npc.y,
-                npc.image.width || GAME.sizes.blockWidth,
-                npc.image.height || GAME.sizes.blockHeight);
-        })
-
-        let bulletsToDelete = [];
-
-        for (let i = 0; i < this.bullets.length; ++i) {
-            let bullet = this.bullets[i].getMove();
-
-            if (!bullet.destroyed) {
-                if(inViewPort(bullet.x)) {
-                    GAME.ctx.drawImage(bullet.image.image,
-                        bullet.image.x, bullet.image.y,
-                        bullet.image.width || GAME.sizes.blockWidth,
-                        bullet.image.height || GAME.sizes.blockHeight,
-                        bullet.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff,
-                        bullet.y,
-                        bullet.image.width || GAME.sizes.blockWidth,
-                        bullet.image.height || GAME.sizes.blockHeight);
-                }
-            } else {
-                bulletsToDelete.push(i);
-            }
-        }
-
-        bulletsToDelete.forEach((bullet) => {
-            GAME.bullets.splice(bullet, 1);
-        })
-
-        this.others.forEach(other => {
-            other = other.getMove();
-            GAME.ctx.drawImage(other.image.image,
-                other.image.x, other.image.y,
-                other.image.width || GAME.sizes.blockWidth,
-                other.image.height || GAME.sizes.blockHeight,
-                other.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff,
-                other.y,
-                other.image.width || GAME.sizes.blockWidth,
-                other.image.height || GAME.sizes.blockHeight);
-        })
+        drawBullets();
+        drawPeople(this.players.filter(player => !player.dead));
+        drawOthers();
+        drawNPCs();
+        drawPeople(this.players.filter(player => player.dead));
 
         GAME.updateImageFrame(true);
     };
@@ -451,16 +469,27 @@ export default function (width, height, ctx) {
         return false;
     }
 
-    let addFire = function() {
-        if(prevType != "spike" && prevType != "fire") {
+    let notInRad = function(type, i, j) {
+        for(let x = 0; x < 5; ++x) {
+            if(types[i-x] && types[i-x][j-1] == type) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    let addFire = function(i, j) {
+        if(prevType != "spike" && notInRad("fire", i, j)) {
             prevType = "fire";
+            currentLevel++;
             return "air";
         }
         return false;
     }
 
-    let addSpike = function() {
-        if(currentLevel > 0 && prevType != "spike" && prevType != "fire") {
+    let addSpike = function(i, j) {
+        if(currentLevel > 0 && prevType != "spike" && notInRad("spike", i, j)) {
             currentLevel--;
             prevType = "spike";
             return "air";
@@ -470,16 +499,12 @@ export default function (width, height, ctx) {
     }
 
     let blockPlain = function() {
-        if(prevType == "spike") {
-            currentLevel++;
-        }
-
         prevType = "ground";
         return "ground";
     }
 
     let getType = function(i, j) {
-        return (types[i] && types[i][j]) || GAME.blockTypes.air;
+        return (types[i] && types[i][j] && types[i][j] == "ground" && "ground") || GAME.blockTypes.air;
     }
 
     let types = {};
@@ -512,8 +537,16 @@ export default function (width, height, ctx) {
 
                         if(prevType == "fire" || prevType == "spike") {
                             GAME.others.push(new Other(GAME, i * GAME.sizes.blockWidth, (GAME.sizes.tableHeight - 3 - currentLevel) * GAME.sizes.blockHeight, prevType));
+
+                            if(prevType == "fire") {
+                                currentLevel--;
+                                types[i][j] = "ground";
+                                types[i][j-1] = prevType;
+                            } else {
+                                currentLevel++;
+                            }
                         }
-                    } else if (current < j) {
+                    } else if (current < j && prevType != "spike") {
                         if(!types[i]) {
                             types[i] = {};
                         }
@@ -539,7 +572,7 @@ export default function (width, height, ctx) {
 
     var addPlayer = function () {
         GAME.players.push(new Player(GAME));
-        GAME.players.push(new Player(GAME));
+        //GAME.players.push(new Player(GAME));
     }
 
     let addNPCs = function () {

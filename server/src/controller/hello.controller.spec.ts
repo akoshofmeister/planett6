@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { HelloController } from './hello.controller';
 import { expect } from 'chai';
 import { SinonStub, stub } from 'sinon';
+import * as MockResponse from 'mock-express-response';
 
 describe('Hello controller', () => {
   const mockWelcomeMessage = 'test welcome message';
@@ -23,7 +24,7 @@ describe('Hello controller', () => {
     });
 
     it('should welcome with message from service', () => {
-      expect(controller.hello()).to.equal(mockWelcomeMessage);
+      expect(controller.hello(new MockResponse())).to.equal(mockWelcomeMessage);
       expect(mockWelcomeStub.called).to.be.true;
     });
   });

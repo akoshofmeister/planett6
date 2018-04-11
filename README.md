@@ -45,20 +45,20 @@ folytathatja a játékot
 
 ``` bash
 # install dependencies
-npm install
+yarn install
 
 # run client with hot reload for development 
-npm run dev-app
+yarn dev-app
 
 # build client for production with minification
-npm run build-app
+yarn build-app
 
 # run server for development
-npm run dev-server
+yarn dev-server
 
 # build server for production
-npm run build-server
+yarn build-server
 
 # run tests
-npm test
+yarn test
 ```

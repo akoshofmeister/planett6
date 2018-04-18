@@ -1,6 +1,7 @@
 import 'reflect-metadata';
-import { HealthController } from './health.controller';
+
 import { expect } from 'chai';
+import { HealthController } from './health.controller';
 
 describe('Health controller', () => {
   const healthResponse = {

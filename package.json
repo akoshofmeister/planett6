@@ -14,7 +14,9 @@
     "test-app:watch": "yarn unit:watch",
     "test-server": "mocha-webpack server/src/**/*.spec.ts --webpack-config server/webpack.config.test.js",
     "test-server:watch": "mocha-webpack server/src/**/*.spec.ts --webpack-config server/webpack.config.test.js --watch",
-    "lint-server": "tslint -c tslint.json 'src/**/*.ts'",
+    "lint-server": "tslint -c server/tslint.json 'server/src/**/*.ts'",
+    "lint-app": "eslint src",
+    "lint-app-test": "eslint test",
     "build-app": "webpack --config build/webpack.prod.conf.js",
     "dev-server": "npm-run-all build-server start-server",
     "start-server": "node --inspect -r source-map-support/register server/dist/index.js",
@@ -22,10 +24,10 @@
     "build-server": "webpack --config server/webpack.config.js",
     "build-server-prod": "cross-env NODE_ENV=production webpack --config server/webpack.config.js --mode=production",
     "build": "npm-run-all --parallel build-app build-server-prod",
-    "start": "npm-run-all --parallel start-server start-app"
+    "start": "npm-run-all --parallel start-server start-app",
+    "analyze": "npm-run-all --parallel lint-server lint-app lint-app-test"
   },
   "dependencies": {
-    "@types/scrypt-async": "^1.3.0",
     "babel-polyfill": "^6.26.0",
     "babel-runtime": "^6.26.0",
     "express": "^4.16.3",
@@ -46,6 +48,7 @@
     "@types/mocha": "^5.0.0",
     "@types/mongoose": "^5.0.9",
     "@types/node": "^9.4.7",
+    "@types/scrypt-async": "^1.3.0",
     "@types/sinon-chai": "^2.7.29",
     "@types/webpack": "^4.1.1",
     "@types/webpack-env": "^1.13.5",

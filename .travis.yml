@@ -10,6 +10,7 @@ install:
   - yarn install
 
 script:
+  - yarn analyze
   - yarn test
   - yarn build
 

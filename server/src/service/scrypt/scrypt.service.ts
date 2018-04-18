@@ -1,7 +1,8 @@
 import { inject, injectable } from 'inversify';
-import TYPES from '../../constant/types';
 import { ScryptStatic } from 'scrypt-async';
+
 import { PASSWORD_SALT, SCRYPT_OPTIONS } from '../../constant/scrypt';
+import TYPES from '../../constant/types';
 
 @injectable()
 export class ScryptService {
@@ -20,4 +21,3 @@ export class ScryptService {
     return await this.hash(input) === hash;
   }
 }
-

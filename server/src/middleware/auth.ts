@@ -1,9 +1,9 @@
-import * as express from "express";
+import * as express from 'express';
 import { Container } from 'inversify';
-import { serverContainer } from '../container/container'
-import { UserService } from '../service/user/user.service';
+
 import TYPES from '../constant/types';
-import { HttpError } from '../model/http-error';
+import { serverContainer } from '../container/container';
+import { UserService } from '../service/user/user.service';
 
 const userService = serverContainer.get<UserService>(TYPES.UserService);
 

@@ -1,13 +1,17 @@
 import { Container } from 'inversify';
 import * as scrypt from 'scrypt-async';
-
-import { HelloService } from '../service/hello.service';
-import { ScryptService } from '../service/scrypt.service';
 import { ScryptStatic } from 'scrypt-async';
+
 import TYPES from '../constant/types';
+const serverContainer = new Container();
 
-export const serverContainer = new Container();
-
-serverContainer.bind<HelloService>(TYPES.HelloService).to(HelloService);
 serverContainer.bind<ScryptStatic>(TYPES.Scrypt).toConstantValue(scrypt);
-serverContainer.bind<ScryptService>(TYPES.ScryptService).to(ScryptService);
+
+const bindDependencies = (func: Function, dependencies: symbol[]) => {
+  let injections = dependencies.map((dependency) => {
+    return serverContainer.get(dependency);
+  });
+  return func.bind(func, ...injections);
+};
+
+export { serverContainer, bindDependencies };

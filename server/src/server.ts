@@ -5,7 +5,9 @@ import { InversifyExpressServer } from 'inversify-express-utils';
 import { connect as mongooseConnect, Model } from 'mongoose';
 
 import { serverContainer } from './container/container';
-import './controller/hello.controller';
+import './service/services.module';
+import './controller/health.controller';
+import './controller/user.controller';
 
 export const server = new InversifyExpressServer(serverContainer);
 

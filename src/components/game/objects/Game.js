@@ -396,16 +396,16 @@ export default function (width, height, ctx) {
     GAME.create = function () {
         return new Promise((resolve, reject) => {
             try {
-                GAME.imageLoader = new imageLoader(GAME);
-                GAME.imageLoader.loadAll()
-                    .then(() => {
+                //GAME.imageLoader = new imageLoader(GAME);
+                //GAME.imageLoader.loadAll()
+                    //.then(() => {
 
                         createBlocks();
                         addPlayer();
                         addNPCs();
                         createKeyListeners();
                         resolve();
-                    })
+                    //})
             } catch (err) {
                 reject(err);
             }

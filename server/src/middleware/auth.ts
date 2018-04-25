@@ -27,7 +27,7 @@ function authMiddlewareFactory(container: Container) {
         if (user) {
           next();
         } else {
-          res.status(403).end(new Error('Wrong password'));
+          res.status(403).end(new Error('Wrong token'));
         }
       } else {
         res.status(401).end(new Error('Invalid username'));

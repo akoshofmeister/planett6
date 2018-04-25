@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import * as bodyParser from 'body-parser';
 import { InversifyExpressServer } from 'inversify-express-utils';
-import { connect as mongooseConnect, Model } from 'mongoose';
+import { connect as mongooseConnect } from 'mongoose';
 
 import { serverContainer } from './container/container';
 import './service/services.module';

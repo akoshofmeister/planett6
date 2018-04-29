@@ -622,27 +622,78 @@ export default function (width, height, ctx) {
     }
 
     let addNPCs = function () {
-        /* let nextCheckpoint = GAME.checkpoints[GAME.currentCheckpoint+1];
+        let nextCheckpoint = GAME.checkpoints[GAME.currentCheckpoint+1];
+
         if(nextCheckpoint) {
+
+            let canGo = function(current) {
+                let left = GAME.getGround(current.x - GAME.sizes.blockWidth, true);
+                let right = GAME.getGround(current.x + GAME.sizes.blockWidth, true);
+
+                if(!left && !right) {
+                    return false;
+                }
+
+                let leftSpike = left && types[GAME.normalizeX(left.x)] && types[GAME.normalizeX(left.x)][GAME.normalizeY(left.y)] ? types[GAME.normalizeX(left.x)] && types[GAME.normalizeX(left.x)][GAME.normalizeY(left.y)] == "spike" : false;
+                let rightSpike = right && types[GAME.normalizeX(right.x)] && types[GAME.normalizeX(right.x)][GAME.normalizeY(right.y)] ? types[GAME.normalizeX(right.x)] && types[GAME.normalizeX(right.x)][GAME.normalizeY(right.y)] == "spike" : false;
+
+                return (left && (
+                        Math.abs(left.y - current.y) <= GAME.sizes.blockWidth 
+                        && !leftSpike
+                    ))
+                    || (right && (
+                        Math.abs(right.y - current.y) <= GAME.sizes.blockWidth
+                        && !rightSpike
+                    ))
+            }
+
             for(let i = 0; i < nextCheckpoint.bloodNeeded; ++i) {
-                let added = false;
+                let counter = 0;
 
-                while(!added) {
-                    let x = Math.max( Math.floor(Math.random() * (GAME.sizes.tableWidth - GAME.checkpoints[GAME.currentCheckpoint].x + 1)) + GAME.checkpoints[GAME.currentCheckpoint].x, 5) * GAME.sizes.blockWidth;
+                let x = Math.max( 
+                        Math.floor(
+                            Math.random() 
+                            * (GAME.sizes.tableWidth - GAME.checkpoints[GAME.currentCheckpoint].x + 1)
+                        ) 
+                        + GAME.checkpoints[GAME.currentCheckpoint].x, 5
+                    ) * GAME.sizes.blockWidth;
 
-                    for(let y = 5; y < GAME.sizes.tableHeight-1; ++y) {
-                        if(
-                            (types[x] && types[x][y] && types[x][y] == "ground")
-                            && (GAME.npcs.filter(npc => console.log(Math.abs(npc.x - x)) && Math.abs(npc.x - x) < 2 * GAME.sizes.blockWidth).length == 0 || true)
-                        ) {
-                            GAME.npcs.push(new NPC(GAME, x, y, 1));
-                            added = true;
-                            break;
-                        }
+                let ground = GAME.getGround(x, true);
+
+                while(
+                    !ground 
+                    || GAME.normalizeX(x) < 5 
+                    || GAME.npcs.filter(npc => Math.abs(npc.x - x) <= GAME.sizes.blockWidth).length != 0
+                    || (
+                        types[GAME.normalizeX(x)] && types[GAME.normalizeX(x)][GAME.normalizeY(ground.y)] && types[GAME.normalizeX(x)][GAME.normalizeY(ground.y)] == "spike"
+                       )
+                    || !canGo(ground)
+                ) {
+                    if(++counter == 10) {
+                        break;
                     }
+
+                    x = Math.max( 
+                        Math.floor(
+                            Math.random() 
+                            * (GAME.sizes.tableWidth - GAME.checkpoints[GAME.currentCheckpoint].x + 1)
+                        ) 
+                        + GAME.checkpoints[GAME.currentCheckpoint].x, 5
+                    ) * GAME.sizes.blockWidth;
+
+                    ground = GAME.getGround(x, true);
+                }
+                if(types[GAME.normalizeX(x)] && types[GAME.normalizeX(x)][GAME.normalizeY(ground.y)]) {
+                    console.log(types[GAME.normalizeX(x)] && types[GAME.normalizeX(x)][GAME.normalizeY(ground.y)])
+                }
+                
+                if(counter != 10) {
+                    GAME.npcs.push(
+                        new NPC(GAME, x, ground.y, 1)
+                    )
                 }
             }
-        } */
+        }
     }
 
     let addOthers = function() {

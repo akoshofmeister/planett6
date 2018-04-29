@@ -19,7 +19,7 @@ export default function (game, x, y, direction) {
         canAttack: true
     };
 
-    var canGoOrClimb = function () {
+    NPC.canGoOrClimb = function () {
         let canGo = this.game.canGo(this.x, this.y, this.direction == 1, true) && !this.game.canFall(this.game.normalizeX(this.x + (this.direction == 1 ? 1 : 0) * this.game.sizes.blockWidth), this.game.normalizeY(this.y), false);
         let canClimb = this.game.canClimb(this.x, this.y, this.direction == 1, true);
 
@@ -103,7 +103,7 @@ export default function (game, x, y, direction) {
                 let c = 0;
 
                 if (this.climb == 0) {
-                    while (c < 2 && !canGoOrClimb.bind(this)()) {
+                    while (c < 2 && !NPC.canGoOrClimb.bind(this)()) {
                         this.direction *= -1;
                         this.speed.x = 7;
                         ++c;

@@ -14,7 +14,20 @@ export class UserService {
       username
     });
     return {
-      username: user.username
+      username: user.username,
+      authToken: ''
+    };
+  }
+
+  public async addUser(username: string, password: string): Promise<IUser> {
+    const user = await userModel.create({
+      username,
+      password
+    });
+    await user.save();
+    return {
+      username: user.username,
+      authToken: ''
     };
   }
 }

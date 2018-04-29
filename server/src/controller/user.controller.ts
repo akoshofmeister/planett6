@@ -28,4 +28,20 @@ export class UserController {
       });
     }
   }
+
+  @httpPost('register')
+  public async register(@request() req: express.Request,
+                        @response() res: express.Response): Promise<IUser> {
+    try {
+      if (await this.validatorService.validateRegisterRequest(req.body)) {
+        return await this.userService.addUser(req.body.username, req.body.password);
+      }
+    } catch (err) {
+      res.status(err.statusCode  || 400).json({
+        error: {
+          message: err.message
+        }
+      });
+    }
+  }
 }

@@ -56,7 +56,7 @@ export class User extends Typegoose {
     });
   }
 
-  @prop()
+  @prop({unique: true})
   public username: string;
   @prop()
   public pwHash?: string;

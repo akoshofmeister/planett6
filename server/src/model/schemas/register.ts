@@ -1,9 +1,10 @@
-export const loginSchema = {
-  title: "login",
+export const registerSchema = {
+  title: "register",
   type: "object",
   properties: {
     username: {
       type: "string",
+      minLength: 3,
       maxLength: 30
     },
     password: {

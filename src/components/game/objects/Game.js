@@ -49,12 +49,12 @@ export default function (width, height, ctx) {
         width,
         height,
         ctx,
-        draw: {from: 20, diff: 0, to: 34},
+        drawObj: {from: 20, diff: 0, to: 34, direction: 1, backgroundPos: 0, backgroundStep: 10},
         isPaused: false,
 
         imageLodar: null,
         navigator: { "lastUpdate": Date.now(), "player": { forward: false, backward: false, up: false }, "player2": { forward: false, backward: false, up: false } },
-        sizes: { blockWidth: 111, blockHeight: 111, tableWidth: 30, tableHeight: 8 },
+        sizes: { blockWidth: 111, blockHeight: 111, tableWidth: 20, tableHeight: 8 },
         blockTypes: { air: "air", ground: "ground" },
         movement: { lastUpdate: new Date(), period: 60, block: {minX: 0, maxX: 1000} },
         gravity: 0.2,
@@ -64,12 +64,26 @@ export default function (width, height, ctx) {
         npcs: [],
         bullets: [],
         others: [],
+        checkpoints: [{
+            type: "checkpoint",
+            x: 0,
+            activated: true
+        }],
+        currentCheckpoint: 0,
 
         fps: 28
     }
 
     GAME.addBullet = function (player) {
         this.bullets.push(new Bullet(this, player.x, player.y, player.direction, player));
+    }
+
+    GAME.checkCheckpoint = function() {
+        let nextCheckpoint = GAME.checkpoints[GAME.currentCheckpoint+1];
+
+        if(nextCheckpoint && nextCheckpoint.bloodNeeded == nextCheckpoint.currentBlood) {
+            console.log(GAME.checkpoints, nextCheckpoint, nextCheckpoint.bloodNeeded, nextCheckpoint.currentBlood);
+        }
     }
 
     GAME.whatIsOn = function (x, y, doNormalization, player) {
@@ -85,6 +99,11 @@ export default function (width, height, ctx) {
                 if (stuff.x <= x && x <= stuff.x + 111 && stuff.y <= y && y <= stuff.y + GAME.sizes.blockHeight) {
                     return stuff;
                 }
+            }
+
+            let nextCheckpoint = GAME.checkpoints[GAME.currentCheckpoint+1];
+            if(nextCheckpoint && x >= nextCheckpoint.x + GAME.sizes.blockWidth && x < nextCheckpoint.x+2*GAME.sizes.blockWidth) {
+                return nextCheckpoint;
             }
         }
 
@@ -146,8 +165,13 @@ export default function (width, height, ctx) {
         }
 
         if(blockingCondition) {
-            blockingCondition = x < GAME.sizes.tableWidth-2;
-            console.log( x , GAME.sizes.tableWidth-2 );
+
+            let limit;
+            let nextCheckpoint = GAME.checkpoints[this.currentCheckpoint+1];
+
+            nextCheckpoint ? (limit = nextCheckpoint.x+2) : (limit = GAME.tableWidth - 2);
+
+            blockingCondition = x < limit;
         }
 
         return y < this.sizes.tableHeight && !!this.blocks[x * this.sizes.tableHeight + y] && blockingCondition;
@@ -188,6 +212,10 @@ export default function (width, height, ctx) {
 
         if (forward) {
             x++;
+        }
+
+        if(types[x] && (types[x][y] == "spike" || types[x][y+1] == "spike" || types[x][y-1] == "spike")) {
+            return 0;
         }
 
         if (!!this.blocks[x * this.sizes.tableHeight + y] && this.blocks[x * this.sizes.tableHeight + y].type == this.blockTypes.ground &&
@@ -267,14 +295,16 @@ export default function (width, height, ctx) {
                 avg = (GAME.movement.block.minX + GAME.movement.block.maxX) / 2;
             }
 
-            GAME.draw.from = Math.min(Math.max(GAME.normalizeX(avg) - 8, 0), GAME.sizes.tableWidth - 14);
-            GAME.draw.to = Math.min(GAME.normalizeX(avg) + 9, GAME.sizes.tableWidth);
+            let tmpFrom = Math.min(Math.max(GAME.normalizeX(avg) - 8, 0), GAME.sizes.tableWidth - 14);
+            GAME.drawObj.direction = tmpFrom > GAME.drawObj.from ? 1 : (tmpFrom == GAME.drawObj.from ? 0 : -1);
+            GAME.drawObj.from = tmpFrom;
+            GAME.drawObj.to = Math.min(GAME.normalizeX(avg) + 9, GAME.sizes.tableWidth);
 
-            if(GAME.draw.from == 0) {
-                GAME.draw.to += 8 - GAME.normalizeX(avg);
+            if(GAME.drawObj.from == 0) {
+                GAME.drawObj.to += 8 - GAME.normalizeX(avg);
             }
 
-            GAME.draw.diff = GAME.sizes.tableWidth - 14 == GAME.draw.from ? 0 : Math.max(avg - 8*(GAME.sizes.blockWidth) - GAME.draw.from * GAME.sizes.blockWidth, 0);
+            GAME.drawObj.diff = GAME.sizes.tableWidth - 14 == GAME.drawObj.from ? 0 : Math.max(avg - 8*(GAME.sizes.blockWidth) - GAME.drawObj.from * GAME.sizes.blockWidth, 0);
         
         }
     }
@@ -282,7 +312,7 @@ export default function (width, height, ctx) {
     GAME.draw = function () {
 
         let inViewPort = function(x) {
-            return GAME.draw.from * GAME.sizes.blockWidth <= x && x <= GAME.draw.to * GAME.sizes.blockWidth;
+            return GAME.drawObj.from * GAME.sizes.blockWidth <= x && x <= GAME.drawObj.to * GAME.sizes.blockWidth;
         }
 
         let drawBullets = () => {
@@ -297,7 +327,7 @@ export default function (width, height, ctx) {
                             bullet.image.x, bullet.image.y,
                             bullet.image.width || GAME.sizes.blockWidth,
                             bullet.image.height || GAME.sizes.blockHeight,
-                            bullet.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff,
+                            bullet.x - GAME.drawObj.from * GAME.sizes.blockWidth - GAME.drawObj.diff,
                             bullet.y,
                             bullet.image.width || GAME.sizes.blockWidth,
                             bullet.image.height || GAME.sizes.blockHeight);
@@ -319,7 +349,7 @@ export default function (width, height, ctx) {
                     npc.image.x, npc.image.y,
                     npc.image.width || GAME.sizes.blockWidth,
                     npc.image.height || GAME.sizes.blockHeight,
-                    npc.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff,
+                    npc.x - GAME.drawObj.from * GAME.sizes.blockWidth - GAME.drawObj.diff,
                     npc.y,
                     npc.image.width || GAME.sizes.blockWidth,
                     npc.image.height || GAME.sizes.blockHeight);
@@ -334,13 +364,13 @@ export default function (width, height, ctx) {
                     var play = player.getMove();
                     GAME.ctx.font="17.5px Courier New";
 
-                    GAME.ctx.fillText(player.name, (player.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff) + (GAME.sizes.blockWidth - GAME.ctx.measureText(player.name).width) / 2 , player.y - 10);
+                    GAME.ctx.fillText(player.name, (player.x - GAME.drawObj.from * GAME.sizes.blockWidth - GAME.drawObj.diff) + (GAME.sizes.blockWidth - GAME.ctx.measureText(player.name).width) / 2 , player.y - 10);
 
                     GAME.ctx.drawImage(play.image.image,
                         play.image.x, play.image.y,
                         GAME.sizes.blockWidth,
                         GAME.sizes.blockHeight,
-                        play.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff,
+                        play.x - GAME.drawObj.from * GAME.sizes.blockWidth - GAME.drawObj.diff,
                         play.y,
                         GAME.sizes.blockWidth,
                         GAME.sizes.blockHeight);
@@ -376,7 +406,7 @@ export default function (width, height, ctx) {
                     other.image.x, other.image.y,
                     other.image.width || GAME.sizes.blockWidth,
                     other.image.height || GAME.sizes.blockHeight,
-                    other.x - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff,
+                    other.x - GAME.drawObj.from * GAME.sizes.blockWidth - GAME.drawObj.diff,
                     other.y,
                     other.image.width || GAME.sizes.blockWidth,
                     other.image.height || GAME.sizes.blockHeight);
@@ -384,13 +414,16 @@ export default function (width, height, ctx) {
         }
 
         GAME.ctx.canvas.width = GAME.ctx.canvas.width;
-        GAME.ctx.drawImage(GAME.imageLoader.get("background").image, 0, 0);
+
+        //GAME.drawObj.backgroundPos += GAME.drawObj.direction * GAME.drawObj.backgroundStep;
+        let bg = GAME.imageLoader.get("background");
+        GAME.ctx.drawImage(bg.image, 0, 0, 1554, 888, 0/*  - GAME.drawObj.backgroundPos */, 0, 1554, 888);
 
         calcViewport();
-        for(let i = GAME.draw.from * GAME.sizes.tableHeight; i < GAME.draw.to * GAME.sizes.tableHeight; ++i) {
+        for(let i = GAME.drawObj.from * GAME.sizes.tableHeight; i < GAME.drawObj.to * GAME.sizes.tableHeight; ++i) {
             let block = GAME.blocks[i];
             if (block.getImage().image) {
-                GAME.ctx.drawImage(block.getImage().image, block.getX() - GAME.draw.from * GAME.sizes.blockWidth - GAME.draw.diff, block.getY());
+                GAME.ctx.drawImage(block.getImage().image, block.getX() - GAME.drawObj.from * GAME.sizes.blockWidth - GAME.drawObj.diff, block.getY());
             }
         }
 
@@ -543,6 +576,7 @@ export default function (width, height, ctx) {
                                 types[i][j] = "ground";
                                 types[i][j-1] = prevType;
                             } else {
+                                types[i][j+1] = prevType;
                                 currentLevel++;
                             }
                         }
@@ -558,8 +592,20 @@ export default function (width, height, ctx) {
         }
     }
 
+    let addCheckpoint = (x) => {
+        GAME.checkpoints.push({
+            type: "checkpoint",
+            x: x,
+            activated: false,
+            bloodNeeded:  Math.max(Math.floor((Math.random() * 100) % 20), 5),
+            currentBlood: 0
+        })
+
+        console.log(GAME.checkpoints[GAME.checkpoints.length-1].bloodNeeded);
+    }
+
     var createBlocks = function () {
-        createRandom(0, GAME.sizes.tableWidth)
+        createRandom(0, GAME.sizes.tableWidth);
 
         for (var i = 0; i < GAME.sizes.tableWidth; ++i) {
             for (var j = 0; j < GAME.sizes.tableHeight; ++j) {
@@ -576,10 +622,27 @@ export default function (width, height, ctx) {
     }
 
     let addNPCs = function () {
-        /* GAME.npcs.push(new NPC(GAME, 555, 555));
-        GAME.npcs.push(new NPC(GAME, 444, 555));
-        GAME.npcs.push(new NPC(GAME, 666, 555)); */
-        //GAME.npcs.push(new NPC(GAME, 888, 555, -1));
+        /* let nextCheckpoint = GAME.checkpoints[GAME.currentCheckpoint+1];
+        if(nextCheckpoint) {
+            for(let i = 0; i < nextCheckpoint.bloodNeeded; ++i) {
+                let added = false;
+
+                while(!added) {
+                    let x = Math.max( Math.floor(Math.random() * (GAME.sizes.tableWidth - GAME.checkpoints[GAME.currentCheckpoint].x + 1)) + GAME.checkpoints[GAME.currentCheckpoint].x, 5) * GAME.sizes.blockWidth;
+
+                    for(let y = 5; y < GAME.sizes.tableHeight-1; ++y) {
+                        if(
+                            (types[x] && types[x][y] && types[x][y] == "ground")
+                            && (GAME.npcs.filter(npc => console.log(Math.abs(npc.x - x)) && Math.abs(npc.x - x) < 2 * GAME.sizes.blockWidth).length == 0 || true)
+                        ) {
+                            GAME.npcs.push(new NPC(GAME, x, y, 1));
+                            added = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        } */
     }
 
     let addOthers = function() {
@@ -614,9 +677,9 @@ export default function (width, height, ctx) {
                 GAME.imageLoader = new imageLoader(GAME);
                 GAME.imageLoader.loadAll()
                     .then(() => {
-
                         createBlocks();
                         addPlayer();
+                        addCheckpoint(GAME.sizes.tableWidth-4);
                         addNPCs();
                         addOthers();
                         createKeyListeners();

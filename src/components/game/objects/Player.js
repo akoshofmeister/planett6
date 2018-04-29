@@ -88,6 +88,8 @@ export default function (game, name) {
             } else if(whatsOn.type == "spike") {
                 this.health = 1;
                 this.hit();
+            } else if(whatsOn.type == "checkpoint") {
+                this.game.checkCheckpoint();
             }
         }
 

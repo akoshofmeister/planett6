@@ -99,7 +99,7 @@ export default function (game, x, y, direction) {
             attack.bind(this)();
 
             if (!this.isAttacking) {
-                follow.bind(this)();
+                //follow.bind(this)();
                 let c = 0;
 
                 if (this.climb == 0) {

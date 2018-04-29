@@ -393,24 +393,31 @@ export default function (width, height, ctx) {
         })
     }
 
-    GAME.create = function () {
-        return new Promise((resolve, reject) => {
-            try {
-                GAME.imageLoader = new imageLoader(GAME);
-                GAME.imageLoader.loadAll()
-                    .then(() => {
-
-                        createBlocks();
-                        addPlayer();
-                        addNPCs();
-                        createKeyListeners();
-                        resolve();
-                    })
-            } catch (err) {
-                reject(err);
-            }
-        });
-    }
+    GAME.create = function (test) {
+      return new Promise((resolve, reject) => {
+        try {
+          if (test) {
+            createBlocks();
+            addPlayer();
+            addNPCs();
+            createKeyListeners();
+            resolve();
+          } else {
+            GAME.imageLoader = new imageLoader(GAME);
+            GAME.imageLoader.loadAll()
+              .then(() => {
+                createBlocks();
+                addPlayer();
+                addNPCs();
+                createKeyListeners();
+                resolve();
+              });
+          }
+        } catch (err) {
+          reject(err);
+        }
+      });
+    };
 
     return GAME;
 };

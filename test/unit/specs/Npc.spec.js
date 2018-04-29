@@ -12,8 +12,8 @@ describe('Npc.js', () => {
     var game = new Game(1473, 888, my_ctx);
     game.imageLoader = new imageLoader(game);
     game.imageLoader.loadAll();
-    game.create();
-    
+    game.create(true);
+
     it("should initialize an npc", () => {
         npc = new Npc(game, 555, 555);
         expect(npc.type).to.equal("npc");
@@ -27,7 +27,7 @@ describe('Npc.js', () => {
         expect(npc.dead).to.equal(false);
         expect(npc.health).to.equal(2);
         expect(npc.game).to.equal(game);
-    });    
+    });
 
     describe("check getMove function", () => {
         it("should return stand", () => {
@@ -69,7 +69,7 @@ describe('Npc.js', () => {
             expect(npc.dead).to.equal(false);
             expect(npc.health).to.equal(1);
         });
-    
+
         it("should die", () => {
             npc.hit();
             expect(npc.dying).to.equal(true);

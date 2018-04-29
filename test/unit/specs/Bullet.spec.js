@@ -14,11 +14,11 @@ describe('Bullet.js', () => {
     var game = new Game(1473, 888, my_ctx);
     game.imageLoader = new imageLoader(game);
     game.imageLoader.loadAll();
-    game.create();    
+    game.create(true);
     player = new Player(game, true);
 
     it("should initialize a bullet", () => {
-        
+
         bullet = new Bullet(game, 90, 500, 1, player);
         assert(bullet.x == 90);
         assert(bullet.y = 500);
@@ -43,7 +43,7 @@ describe('Bullet.js', () => {
     });
 
     it("check getMove function", () => {
-        var result =  bullet.getMove();      
+        var result =  bullet.getMove();
         expect(result.x).to.equal(90);
         expect(result.y).to.equal(500);
         expect(result.destroyed).to.equal(false);

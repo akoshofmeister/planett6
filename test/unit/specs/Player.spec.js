@@ -12,7 +12,7 @@ describe('Player.js', () => {
     var game = new Game(1473, 888, my_ctx);
     game.imageLoader = new imageLoader(game);
     game.imageLoader.loadAll();
-    game.create();
+    game.create(true);
 
     it("should initialize a player", () => {
         player = new Player(game, true);

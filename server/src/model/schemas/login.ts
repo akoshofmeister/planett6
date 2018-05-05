@@ -1,15 +1,15 @@
 export const loginSchema = {
-  title: "login",
-  type: "object",
+  title: 'login',
+  type: 'object',
   properties: {
     username: {
-      type: "string",
+      type: 'string',
       maxLength: 30
     },
     password: {
-      type: "string",
+      type: 'string',
       maxLength: 30
-    },
+    }
   },
-  required: ["username", "password"]
+  required: ['username', 'password']
 };

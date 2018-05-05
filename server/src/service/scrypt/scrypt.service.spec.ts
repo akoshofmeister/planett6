@@ -6,7 +6,9 @@ describe('Scrypt service', () => {
   let scryptService: ScryptService;
 
   const mockHash = 'testHash';
-  const mockScrypt = (input, salt, options, callback) => {callback(mockHash)};
+  const mockScrypt = (input, salt, options, callback) => {
+    callback(mockHash);
+  };
 
   beforeEach(() => {
     scryptService = new ScryptService(mockScrypt);

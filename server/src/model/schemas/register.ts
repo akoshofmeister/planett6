@@ -1,16 +1,16 @@
 export const registerSchema = {
-  title: "register",
-  type: "object",
+  title: 'register',
+  type: 'object',
   properties: {
     username: {
-      type: "string",
+      type: 'string',
       minLength: 3,
       maxLength: 30
     },
     password: {
-      type: "string",
+      type: 'string',
       maxLength: 30
-    },
+    }
   },
-  required: ["username", "password"]
+  required: ['username', 'password']
 };

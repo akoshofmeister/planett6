@@ -1,9 +1,9 @@
-import { Ajv, ValidateFunction } from "ajv";
+import { Ajv, ValidateFunction } from 'ajv';
 import { inject, injectable } from 'inversify';
 
 import TYPES from '../../constant/types';
-import { loginSchema, registerSchema } from "../../model/schemas";
-import { HttpError } from "../../model/http-error";
+import { HttpError } from '../../model/http-error';
+import { loginSchema, registerSchema } from '../../model/schemas';
 
 @injectable()
 export class ValidatorService {
@@ -13,6 +13,14 @@ export class ValidatorService {
   constructor(@inject(TYPES.Ajv) private _ajv: Ajv) {
     this._loginValidator = _ajv.compile(loginSchema);
     this._registerValidator = _ajv.compile(registerSchema);
+  }
+
+  public validateLoginRequest(body: any): Promise<boolean> {
+    return this._validateRequest(body, this._loginValidator);
+  }
+
+  public validateRegisterRequest(body: any) {
+    return this._validateRequest(body, this._registerValidator);
   }
 
   private _validateRequest(body: any, validator: ValidateFunction): Promise<boolean> {
@@ -26,13 +34,5 @@ export class ValidatorService {
         resolve(true);
       }
     });
-  }
-
-  public validateLoginRequest(body: any): Promise<boolean> {
-    return this._validateRequest(body, this._loginValidator);
-  }
-
-  public validateRegisterRequest(body: any) {
-    return this._validateRequest(body, this._registerValidator);
   }
 }

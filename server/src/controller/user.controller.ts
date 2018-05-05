@@ -5,7 +5,7 @@ import { controller, httpPost, request, response } from 'inversify-express-utils
 import TYPES from '../constant/types';
 import { IUser } from '../interfaces/user';
 import { UserService } from '../service/user/user.service';
-import { ValidatorService } from "../service/validator/validator.service";
+import { ValidatorService } from '../service/validator/validator.service';
 
 @controller('/user/')
 export class UserController {

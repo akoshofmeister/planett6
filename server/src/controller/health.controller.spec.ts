@@ -9,6 +9,7 @@ describe('Health controller', () => {
   };
 
   let controller: HealthController;
+
   beforeEach(() => {
     controller = new HealthController();
   });

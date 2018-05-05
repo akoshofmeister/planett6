@@ -7,6 +7,7 @@ import { UserService } from '../service/user/user.service';
 
 const userService = serverContainer.get<UserService>(TYPES.UserService);
 
+// TODO: make this work
 async function getUsernameFromToken(token: string) {
   return new Promise<string|null>((resolve) => {
     if (token === 'VALID_TOKEN') {

@@ -1,9 +1,11 @@
 import * as express from 'express';
 import { inject } from 'inversify';
-import { controller, httpPost, request, response } from 'inversify-express-utils';
+import { controller, httpGet, httpPost, request, response } from 'inversify-express-utils';
 
 import TYPES from '../constant/types';
-import { IUser } from '../interfaces/user';
+import { IUser, IUserWithToken } from '../interfaces/user';
+import { authMiddleware } from '../middleware/auth';
+import { IRequest } from '../model/request';
 import { UserService } from '../service/user/user.service';
 import { ValidatorService } from '../service/validator/validator.service';
 
@@ -15,7 +17,7 @@ export class UserController {
 
   @httpPost('login')
   public async login(@request() req: express.Request,
-                     @response() res: express.Response): Promise<IUser> {
+                     @response() res: express.Response): Promise<IUserWithToken> {
     try {
       if (await this.validatorService.validateLoginRequest(req.body)) {
         return await this.userService.authenticate(req.body.username, req.body.password);
@@ -43,5 +45,11 @@ export class UserController {
         }
       });
     }
+  }
+
+  @httpGet('', authMiddleware())
+  public async getUser(@request() req: express.Request & IRequest,
+                       @response() res: express.Response): Promise<IUser> {
+    return req.user;
   }
 }

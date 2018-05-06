@@ -12,7 +12,9 @@ import './controller/user.controller';
 
 export const server = new InversifyExpressServer(serverContainer);
 
-mongooseConnect('mongodb://localhost/users');
+const mongoDbAddress = process.env.MONGO_ADDRESS || 'mongodb://localhost/planett6';
+
+mongooseConnect(mongoDbAddress);
 
 server.setConfig((app) => {
     app.use(bodyParser.urlencoded({

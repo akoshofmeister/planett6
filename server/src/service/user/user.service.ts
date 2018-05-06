@@ -1,15 +1,22 @@
-import { injectable } from 'inversify';
+import { inject, injectable } from 'inversify';
 
+import TYPES from '../../constant/types';
 import { IUser, IUserWithToken } from '../../interfaces/user';
 import { HttpError } from '../../model/http-error';
 import { model as userModel } from '../../model/user';
+import { JwtService } from '../jwt/jwt.service';
 
 @injectable()
 export class UserService {
+  constructor(@inject(TYPES.JwtService) private _jwtService: JwtService) {
+  }
+
   public async authenticate(username: string, password: string): Promise<IUserWithToken> {
     return (await userModel.authenticate(username, password) ? {
       user: await this.findUser(username),
-      authToken: 'VALID_AUTH_TOKEN' // TODO: make this work
+      authToken: await this._jwtService.createToken({
+        username
+      })
     } : null);
   }
 

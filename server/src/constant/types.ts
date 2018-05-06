@@ -4,7 +4,8 @@ const TYPES = {
   ScryptService: Symbol.for('ScryptService'),
   UserService: Symbol.for('UserService'),
   ValidatorService: Symbol.for('ValidatorService'),
-  Ajv: Symbol.for('Ajv')
+  Ajv: Symbol.for('Ajv'),
+  JwtService: Symbol.for('JwtService')
 };
 
 export default TYPES;

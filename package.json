@@ -23,7 +23,7 @@
     "start-server-prod": "node server/dist/index.js",
     "build-server": "webpack --config server/webpack.config.js",
     "build-server-prod": "cross-env NODE_ENV=production webpack --config server/webpack.config.js --mode=production",
-    "build": "npm-run-all --parallel build-app build-server-prod",
+    "build": "npm-run-all --parallel build-app build-server",
     "start": "npm-run-all --parallel start-server start-app",
     "analyze": "npm-run-all --parallel lint-server lint-app lint-app-test"
   },

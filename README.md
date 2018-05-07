@@ -26,6 +26,7 @@ folytathatja a játékot
 - CSS
 - Vue.js
 - JavaScript ES6
+- TypeScript
 
 ### Akik írják
 - Hofmeister Ákos
@@ -43,22 +44,55 @@ folytathatja a játékot
 
 ### Parancsok
 
+- Telepítés
 ``` bash
 # install dependencies
 yarn install
-
+```
+- Kliens futtatása
+```bash
 # run client with hot reload for development 
 yarn dev-app
 
 # build client for production with minification
 yarn build-app
+```
 
+- Szerver futtatása
+```bash
 # run server for development
 yarn dev-server
 
 # build server for production
 yarn build-server
+```
 
+- Tesztelés
+```bash
 # run tests
 yarn test
+
+# run tests for client
+yarn test-app
+
+# run tests for client with watch
+yarn test-app:watch
+
+# run tests for server
+yarn test-server
+
+# run tests for client with watch
+yarn test-server:watch
+```
+
+- Extra eszközök
+    - ESLint a JavaScript kód stílusának analizálására
+    - TSLint a TypeScript kód stílusának analizálására
+```bash
+# run static code analyzer for client and its tests (ESLint)
+yarn lint-app
+yarn lint-app-test
+
+# run static code analyzer for server (TSLint)
+yarn lint-server
 ```

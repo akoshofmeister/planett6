@@ -32,29 +32,29 @@ describe('Npc.js', () => {
   describe('check getMove function', () => {
     it('should return stand', () => {
       const result = npc.getMove();
+      expect(result).to.be.an('object');
       expect(npc.currentImage.index.walk).to.equal(-1);
       expect(npc.currentImage.index.climb).to.equal(-1);
       expect(npc.currentImage.type).to.equal('stand');
-      expect(result).to.be.exist();
     });
 
     it('should return climb', () => {
       npc.climb = 1;
       const result = npc.getMove();
+      expect(result).to.be.an('object');
       expect(npc.currentImage.index.walk).to.equal(-1);
       expect(npc.currentImage.type).to.equal('climb');
-      expect(result).to.be.exist();
     });
 
     it('should return move', () => {
       npc.climb = 0;
       npc.moved = true;
       const result = npc.getMove();
+      expect(result).to.be.an('object');
       expect(npc.currentImage.index.walk).to.equal(0);
       expect(npc.currentImage.index.climb).to.equal(-1);
       expect(npc.currentImage.type).to.equal('move');
       expect(npc.moved).to.equal(false);
-      expect(result).to.be.exist();
     });
 
     it('should return die', () => {
@@ -62,8 +62,8 @@ describe('Npc.js', () => {
       tmpNpc.hit();
       tmpNpc.hit();
       const result = tmpNpc.getMove();
+      expect(result).to.be.an('object');
       expect(tmpNpc.currentImage.type).to.equal('die');
-      expect(result).to.be.exist();
     });
   });
 

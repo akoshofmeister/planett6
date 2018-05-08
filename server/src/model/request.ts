@@ -1,5 +1,5 @@
 import { IUser } from '../interfaces/user';
 
-export interface IRequest {
+export interface ICustomRequest {
   user: IUser;
 }

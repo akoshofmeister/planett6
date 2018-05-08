@@ -69,9 +69,6 @@ export class User extends Typegoose {
 
   private _password?: string;
 
-  @inject(TYPES.ScryptService)
-  private _scryptService?: ScryptService;
-
   constructor(username?: string, password?: string) {
     super();
     this.username = username;

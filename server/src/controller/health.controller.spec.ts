@@ -1,6 +1,5 @@
-import 'reflect-metadata';
-
 import { expect } from 'chai';
+
 import { HealthController } from './health.controller';
 
 describe('Health controller', () => {

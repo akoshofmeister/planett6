@@ -1,11 +1,11 @@
-import * as express from 'express';
+import { Request, Response } from 'express';
 import { inject } from 'inversify';
 import { controller, httpGet, httpPost, request, response } from 'inversify-express-utils';
 
 import TYPES from '../constant/types';
 import { IUser, IUserWithToken } from '../interfaces/user';
 import { authMiddleware } from '../middleware/auth';
-import { IRequest } from '../model/request';
+import { ICustomRequest } from '../model/request';
 import { UserService } from '../service/user/user.service';
 import { ValidatorService } from '../service/validator/validator.service';
 
@@ -16,8 +16,8 @@ export class UserController {
   }
 
   @httpPost('login')
-  public async login(@request() req: express.Request,
-                     @response() res: express.Response): Promise<IUserWithToken> {
+  public async login(@request() req: Request,
+                     @response() res: Response): Promise<IUserWithToken> {
     try {
       if (await this.validatorService.validateLoginRequest(req.body)) {
         return await this.userService.authenticate(req.body.username, req.body.password);
@@ -32,8 +32,8 @@ export class UserController {
   }
 
   @httpPost('register')
-  public async register(@request() req: express.Request,
-                        @response() res: express.Response): Promise<IUser> {
+  public async register(@request() req: Request,
+                        @response() res: Response): Promise<IUser> {
     try {
       if (await this.validatorService.validateRegisterRequest(req.body)) {
         return await this.userService.addUser(req.body.username, req.body.password);
@@ -48,8 +48,8 @@ export class UserController {
   }
 
   @httpGet('', authMiddleware())
-  public async getUser(@request() req: express.Request & IRequest,
-                       @response() res: express.Response): Promise<IUser> {
+  public async getUser(@request() req: Request & ICustomRequest,
+                       @response() res: Response): Promise<IUser> {
     return req.user;
   }
 }

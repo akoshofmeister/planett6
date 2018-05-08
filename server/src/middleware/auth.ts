@@ -4,7 +4,7 @@ import TYPES from '../constant/types';
 import { serverContainer } from '../container/container';
 import { HttpError } from '../model/http-error';
 import { IJwtPayload } from '../model/jwt-payload';
-import { IRequest } from '../model/request';
+import { ICustomRequest } from '../model/request';
 import { JwtService } from '../service/jwt/jwt.service';
 import { UserService } from '../service/user/user.service';
 
@@ -27,7 +27,7 @@ async function getUsernameFromToken(token: string): Promise<string> {
 }
 
 const authMiddleware = () => {
-  return async (req: express.Request & IRequest, res: express.Response, next: express.NextFunction) => {
+  return async (req: express.Request & ICustomRequest, res: express.Response, next: express.NextFunction) => {
     const token = req.header('x-auth-token');
     if (!token) {
       res.status(401).json({

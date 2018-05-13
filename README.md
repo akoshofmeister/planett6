@@ -1,7 +1,7 @@
 # T6-os bolygó
 [![Build Status](https://travis-ci.org/akoshofmeister/planett6.svg?branch=add-vuejs-base)](https://travis-ci.org/akoshofmeister/planett6)
 ### A játék menete
-Fred, egy fejvadász, akit azért küldtek a T6-os bolygóra, hogy megtisztítsa azt a bennszülött lényektől. 
+Fred, egy fejvadász, akit azért küldtek a T6-os bolygóra, hogy megtisztítsa azt a bennszülött lényektől.
 
 ### Dolgok, amiket lehet csinálni
 - Meg kell ölni minden szörnyet ahhoz, hogy egy ellenörzőponton tovább tudj menni
@@ -12,7 +12,7 @@ Fred, egy fejvadász, akit azért küldtek a T6-os bolygóra, hogy megtisztítsa
 - Ha egy szörny észrevett, addig követ téged amíg meg nem ölöd, vagy ő meg nem öl téged
 - A szörnyeket a kezedben lévő fegyverrel tudod megölni, lőni kell hozzá
 - Be tudsz jelentkezni, hogy a mérföldköveidet tárolhasd, illetve más dolgokat is meg tudsz nézni
-- Tudsz játszani valaki mással is egyszerre, egy gépen, egy billentyűzeten. Ilyenkor együtt kell haladnotok, a másik játékos is 
+- Tudsz játszani valaki mással is egyszerre, egy gépen, egy billentyűzeten. Ilyenkor együtt kell haladnotok, a másik játékos is
 bejelentkezhet, hogy tárolhassa a mérföldköveit, vagy játszhat idegen módban. Ha valamelyikőtök meghal, akkor csak ellenörzőponton
 folytathatja a játékot
 
@@ -26,6 +26,7 @@ folytathatja a játékot
 - CSS
 - Vue.js
 - JavaScript ES6
+- TypeScript
 
 ### Akik írják
 - Hofmeister Ákos
@@ -43,22 +44,57 @@ folytathatja a játékot
 
 ### Parancsok
 
+- Telepítés
 ``` bash
 # install dependencies
-npm install
-
-# run client with hot reload for development 
-npm run dev-app
+yarn install
+```
+- Kliens futtatása
+```bash
+# run client with hot reload for development
+yarn dev-app
 
 # build client for production with minification
-npm run build-app
+yarn build-app
+```
 
-# run server for development
-npm run dev-server
+- Szerver futtatása
+  - Megjegyzés: MongoDB adatbázis szerver szükséges a futtatásához.
+```bash
+# run server for development, setting mongodb address
+# (assuming Linux/MacOS host for env variable setting and db at mongodb://localhost/planett6)
+MONGO_ADDRESS=mongodb://localhost/planett6 yarn dev-server
 
 # build server for production
-npm run build-server
+yarn build-server
+```
 
+- Tesztelés
+```bash
 # run tests
-npm test
+yarn test
+
+# run tests for client
+yarn test-app
+
+# run tests for client with watch
+yarn test-app:watch
+
+# run tests for server
+yarn test-server
+
+# run tests for client with watch
+yarn test-server:watch
+```
+
+- Extra eszközök
+  - ESLint a JavaScript kód stílusának analizálására
+  - TSLint a TypeScript kód stílusának analizálására
+```bash
+# run static code analyzer for client and its tests (ESLint)
+yarn lint-app
+yarn lint-app-test
+
+# run static code analyzer for server (TSLint)
+yarn lint-server
 ```

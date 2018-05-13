@@ -8,6 +8,7 @@ function resolve(dir) {
 }
 
 module.exports = {
+  mode: 'development',
   name: 'server-test',
   target: 'node',
   externals: [nodeExternals()],

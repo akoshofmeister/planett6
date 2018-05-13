@@ -2,12 +2,17 @@ language: node_js
 node_js:
   - "8"
 
+sudo: required
+addons:
+  chrome: stable
+
 install:
-  - npm install
+  - yarn install
 
 script:
-  - npm run test
-  - npm run build
+  - yarn analyze
+  - yarn test
+  - yarn build
 
 deploy:
   - provider: script

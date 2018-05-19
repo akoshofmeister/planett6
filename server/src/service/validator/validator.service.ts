@@ -19,7 +19,7 @@ export class ValidatorService {
     return this._validateRequest(body, this._loginValidator);
   }
 
-  public validateRegisterRequest(body: any) {
+  public validateRegisterRequest(body: any): Promise<boolean> {
     return this._validateRequest(body, this._registerValidator);
   }
 
@@ -28,7 +28,7 @@ export class ValidatorService {
       const valid = validator(body);
 
       if (!valid) {
-        const error = this._loginValidator.errors[0];
+        const error = validator.errors[0];
         reject(new HttpError(error.dataPath + ' ' + error.message, 400));
       } else {
         resolve(true);

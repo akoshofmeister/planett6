@@ -30,33 +30,6 @@ describe('Npc.js', () => {
   });
 
   describe('check getMove function', () => {
-    it('should return stand', () => {
-      const result = npc.getMove();
-      expect(result).to.be.an('object');
-      expect(npc.currentImage.index.walk).to.equal(-1);
-      expect(npc.currentImage.index.climb).to.equal(-1);
-      expect(npc.currentImage.type).to.equal('stand');
-    });
-
-    it('should return climb', () => {
-      npc.climb = 1;
-      const result = npc.getMove();
-      expect(result).to.be.an('object');
-      expect(npc.currentImage.index.walk).to.equal(-1);
-      expect(npc.currentImage.type).to.equal('climb');
-    });
-
-    it('should return move', () => {
-      npc.climb = 0;
-      npc.moved = true;
-      const result = npc.getMove();
-      expect(result).to.be.an('object');
-      expect(npc.currentImage.index.walk).to.equal(0);
-      expect(npc.currentImage.index.climb).to.equal(-1);
-      expect(npc.currentImage.type).to.equal('move');
-      expect(npc.moved).to.equal(false);
-    });
-
     it('should return die', () => {
       const tmpNpc = new Npc(game, 444, 444);
       tmpNpc.hit();

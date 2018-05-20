@@ -29,7 +29,8 @@ export default function (game) {
         "fire2": require("./images/tuz2.png"),
         "fire3": require("./images/tuz3.png"),
         "fire4": require("./images/tuz4.png"),
-        "spike": require("./images/spike.png")
+        "spike": require("./images/spike.png"),
+        "menu": require("./images/menu.png")
     };
 
     var images = {};

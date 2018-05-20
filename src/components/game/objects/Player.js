@@ -63,6 +63,8 @@ export default function (game, name) {
             if(this.game.normalizeY(this.y) < this.game.sizes.tableHeight) {
                 this.velocity.y += 3;
                 this.y += this.velocity.y;
+            } else {
+                this.game.playerDead();
             }
             return;
         }
@@ -152,7 +154,6 @@ export default function (game, name) {
     Player.die = function() {
         this.dead = true;
         this.velocity.y = -30;
-
     }
 
     Player.shoot = function() {

@@ -99,7 +99,7 @@ export default function (game, x, y, direction) {
             attack.bind(this)();
 
             if (!this.isAttacking) {
-                //follow.bind(this)();
+                follow.bind(this)();
                 let c = 0;
 
                 if (this.climb == 0) {
@@ -130,6 +130,8 @@ export default function (game, x, y, direction) {
         } else if (this.dying && ++this.currentImage.index.death > 12) {
             this.dying = false;
             this.dead = true;
+
+            this.game.npcDead();
         }
     }
 

@@ -6,12 +6,18 @@ import Player from './Player';
 import Other from './Other';
 import imageLoader from '../imageLoader';
 
-export default function (width, height, ctx) {
+export default function (width, height, ctx, gamePauseEvent) {
     var GAME = {
         keys: [
             {
                 key: 27,
-                fnDown: () => { GAME.isPaused ? GAME.start() : GAME.stop(); }
+                fnDown: () => { 
+                    if(GAME.getState() != 4) {
+                        return;
+                    }
+
+                    GAME.isPaused ? GAME.start() : GAME.stop(); 
+                }
             }, {
                 key: 39,
                 fnUp: () => { GAME.navigator.player.forward = false; },
@@ -54,7 +60,7 @@ export default function (width, height, ctx) {
 
         imageLodar: null,
         navigator: { "lastUpdate": Date.now(), "player": { forward: false, backward: false, up: false }, "player2": { forward: false, backward: false, up: false } },
-        sizes: { blockWidth: 111, blockHeight: 111, tableWidth: 20, tableHeight: 8 },
+        sizes: { blockWidth: 111, blockHeight: 111, tableWidth: 30, tableHeight: 8 },
         blockTypes: { air: "air", ground: "ground" },
         movement: { lastUpdate: new Date(), period: 60, block: {minX: 0, maxX: 1000} },
         gravity: 0.2,
@@ -72,6 +78,43 @@ export default function (width, height, ctx) {
         currentCheckpoint: 0,
 
         fps: 28
+    }
+
+    GAME.npcDead = function() {
+        let nextCheckpoint = GAME.checkpoints[GAME.currentCheckpoint+1];
+    
+        if(++nextCheckpoint.currentBlood == nextCheckpoint.bloodNeeded) {
+            this.gameOver(true);
+        }
+
+        console.log(nextCheckpoint.currentBlood, nextCheckpoint.bloodNeeded);
+    }
+
+    GAME.playerDead = function() {
+        if(this.players.filter(player => player.dead).length == this.players.length) {
+            this.gameOver(false);
+        }
+    }
+
+    GAME.gameOver = function(won) {
+        this.stop();
+    }
+
+    GAME.getState = function() {
+        if(GAME.players.filter(player => player.dead).length == GAME.players.length) {
+            if(GAME.players.length == 1) {
+                return 0;
+            }
+            return 1;
+        }
+
+        let nextCheckpoint = GAME.checkpoints[GAME.currentCheckpoint+1];
+    
+        if(nextCheckpoint.currentBlood == nextCheckpoint.bloodNeeded) {
+            return GAME.players.length == 1 ? 2 : 3;
+        }
+
+        return 4;
     }
 
     GAME.addBullet = function (player) {
@@ -467,15 +510,22 @@ export default function (width, height, ctx) {
 
     var interval;
 
-    GAME.start = function () {
+    GAME.start = function (isFirst) {
+        if(!GAME.players.length) {
+            return;
+        }
+        
         GAME.isPaused = false;
         interval = setInterval(GAME.round, 1000 / GAME.fps);
+        
+        !isFirst && document.dispatchEvent(gamePauseEvent);
     };
 
     GAME.stop = function () {
         if (interval) {
             clearInterval(interval);
             GAME.isPaused = true;
+            document.dispatchEvent(gamePauseEvent);
         }
     };
 
@@ -593,15 +643,15 @@ export default function (width, height, ctx) {
     }
 
     let addCheckpoint = (x) => {
+        let minNpc = Math.round(GAME.sizes.tableWidth / 10);
+        let maxNpc = Math.round(GAME.sizes.tableWidth / 2);
         GAME.checkpoints.push({
             type: "checkpoint",
             x: x,
             activated: false,
-            bloodNeeded:  Math.max(Math.floor((Math.random() * 100) % 20), 5),
+            bloodNeeded:  Math.floor(Math.random() * (maxNpc - minNpc + 1) + minNpc),
             currentBlood: 0
         })
-
-        console.log(GAME.checkpoints[GAME.checkpoints.length-1].bloodNeeded);
     }
 
     var createBlocks = function () {
@@ -616,9 +666,17 @@ export default function (width, height, ctx) {
         }
     }
 
-    var addPlayer = function () {
-        GAME.players.push(new Player(GAME));
-        //GAME.players.push(new Player(GAME));
+    GAME.addPlayer = function (player1, player2) {
+        if(GAME.players.length || (!player1 && !player2)) {
+            return;
+        }
+
+        if(player1) {
+            GAME.players.push(new Player(GAME, player1));
+        }
+        if(player2) {
+            GAME.players.push(new Player(GAME, player2));
+        }
     }
 
     let addNPCs = function () {
@@ -670,6 +728,7 @@ export default function (width, height, ctx) {
                     || !canGo(ground)
                 ) {
                     if(++counter == 10) {
+                        nextCheckpoint.bloodNeeded--;
                         break;
                     }
 
@@ -683,9 +742,6 @@ export default function (width, height, ctx) {
 
                     ground = GAME.getGround(x, true);
                 }
-                if(types[GAME.normalizeX(x)] && types[GAME.normalizeX(x)][GAME.normalizeY(ground.y)]) {
-                    console.log(types[GAME.normalizeX(x)] && types[GAME.normalizeX(x)][GAME.normalizeY(ground.y)])
-                }
                 
                 if(counter != 10) {
                     GAME.npcs.push(
@@ -693,6 +749,8 @@ export default function (width, height, ctx) {
                     )
                 }
             }
+
+            nextCheckpoint.bloodNeeded = GAME.npcs.length;
         }
     }
 
@@ -729,7 +787,6 @@ export default function (width, height, ctx) {
                 GAME.imageLoader.loadAll()
                     .then(() => {
                         createBlocks();
-                        addPlayer();
                         addCheckpoint(GAME.sizes.tableWidth-4);
                         addNPCs();
                         addOthers();
@@ -740,6 +797,11 @@ export default function (width, height, ctx) {
                 reject(err);
             }
         });
+    }
+
+    GAME.preload = function() {
+        let bg = GAME.imageLoader.get("menu");
+        GAME.ctx.drawImage(bg.image, 0, 0, 1554, 888, 0/*  - GAME.drawObj.backgroundPos */, 0, 1554, 888);
     }
 
     return GAME;

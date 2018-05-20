@@ -12,7 +12,7 @@ const userService = serverContainer.get<UserService>(TYPES.UserService);
 const jwtService = serverContainer.get<JwtService>(TYPES.JwtService);
 
 async function getUsernameFromToken(token: string): Promise<string> {
-  return new Promise<string|null>(async (resolve, reject) => {
+  return new Promise<string | null>(async (resolve, reject) => {
     try {
       const decoded = (await jwtService.validateToken(token)) as IJwtPayload;
       if (decoded.username) {
@@ -26,41 +26,40 @@ async function getUsernameFromToken(token: string): Promise<string> {
   });
 }
 
-const authMiddleware = () => {
-  return async (req: express.Request & ICustomRequest, res: express.Response, next: express.NextFunction) => {
-    const token = req.header('x-auth-token');
-    if (!token) {
-      res.status(401).json({
-        error: {
-          message: 'No x-auth-token specified'
-        }
-      });
-      res.end();
-      return;
-    }
-    try {
-      const username = await getUsernameFromToken(token);
-      const user = await userService.findUser(username);
-      if (user) {
-        req.user = user;
-        next();
-      } else {
-        res.status(400).json({
-          error: {
-            message: 'User does not exist'
-          }
-        });
-        res.end();
+export const authMiddleware = async (req: express.Request & ICustomRequest,
+                                     res: express.Response, next: express.NextFunction) => {
+  const token = req.header('x-auth-token');
+  if (!token) {
+    res.status(401).json({
+      error: {
+        message: 'No x-auth-token specified'
       }
-    } catch (err) {
-      res.status(err.statusCode || 400).json({
+    });
+    res.end();
+    return;
+  }
+  try {
+    const username = await getUsernameFromToken(token);
+    const user = await userService.findUser(username);
+    if (user) {
+      req.user = user;
+      next();
+    } else {
+      res.status(400).json({
         error: {
-          message: err.message
+          message: 'User does not exist'
         }
       });
       res.end();
     }
-  };
+  } catch (err) {
+    res.status(err.statusCode || 400).json({
+      error: {
+        message: err.message
+      }
+    });
+    res.end();
+  }
 };
 
-export { authMiddleware };
+export type AuthMiddlewareType = typeof authMiddleware;

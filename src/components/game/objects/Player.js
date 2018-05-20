@@ -1,22 +1,29 @@
 /* eslint-disable */
-export default function (game, player2) {
-    var imageType = player2 ? "player2" : "player";
+export default function (game, name) {
+    var imageType = game.players.length == 1 ? "player2" : "player";
     var Player = {
         type: "player",
         currentImage: { index: { walk: 0, stand: 1 }, image: game.imageLoader.get(imageType, ["forward", "stand", "0"]) },
-        x: (player2 && 222) || 111,
+        x: (game.players.length == 1 && 222) || 111,
         y: 333,
         direction: 1,
         maxSpeed: { x: 500, y: 8 },
         velocity: { x: 0, y: 0 },
         acceleration: { x: 700, y: 0 },
         moved: false,
-        player2: !!player2,
+        player2: game.players.length == 1,
         canShoot: true,
-        health: 3,
+        health: 5,
         dead: false,
-        game: game
+        game: game,
+        name: name || "Doe János",
+        killCounter: 0,
+        hitTimer: new Date()
     };
+
+    Player.npcKilled = function() {
+        this.killCounter++;
+    }
 
     var speedUp = function (forward, time) {
         if (forward && this.velocity.x < this.maxSpeed.x) {
@@ -52,6 +59,16 @@ export default function (game, player2) {
     }
 
     Player.move = function (time, keys) {
+        if(this.dead) {
+            if(this.game.normalizeY(this.y) < this.game.sizes.tableHeight) {
+                this.velocity.y += 3;
+                this.y += this.velocity.y;
+            } else {
+                this.game.playerDead();
+            }
+            return;
+        }
+
         if(keys.shoot) {
             if(this.canShoot) {
                 this.shoot();
@@ -64,6 +81,21 @@ export default function (game, player2) {
         if (keys.forward || keys.backward) {
             this.direction = keys.forward ? 1 : -1;
         }
+
+        let whatsOn = this.game.whatIsOn(this.x + 55.5, this.y, true, true);
+
+        if(whatsOn) {
+            if((whatsOn.type == "npc"&& whatsOn.dead) || whatsOn.type == "fire") {
+                this.hit(true);
+            } else if(whatsOn.type == "spike") {
+                this.health = 1;
+                this.hit();
+            } else if(whatsOn.type == "checkpoint") {
+                this.game.checkCheckpoint();
+            }
+        }
+
+        let canFall = this.game.canFall(this.x, this.y, true);
 
         if (time) {
 
@@ -79,11 +111,9 @@ export default function (game, player2) {
                 slowDown.bind(this)(time);
             }
 
-            let canFall = this.game.canFall(this.x, this.y, true);
             if (this.jumping || canFall) {
                 this.velocity.y += 1.7;
             }
-
 
             this.y += this.velocity.y;
 
@@ -112,16 +142,30 @@ export default function (game, player2) {
         }
     }
 
-    Player.die = function() {
+    Player.hit = function(useTimer) {
+        if(!useTimer || (Date.now() - this.hitTimer >= 1000)) {
+            this.hitTimer = Date.now();
+            if(this.health != 0 && --this.health == 0) {
+                this.die();
+            }
+        }
+    }
 
+    Player.die = function() {
+        this.dead = true;
+        this.velocity.y = -30;
     }
 
     Player.shoot = function() {
-        this.game.addBullet(this.x, this.y, this.direction, this.player2);
+        this.game.addBullet(this);
     }
 
     Player.getMove = function (time) {
-        if (this.game.canFall(this.x, this.y, true)) {
+        if(this.dead) {
+            this.currentImage.index.walk = -1;
+            this.currentImage.index.stand = -1;
+            this.currentImage.image = this.game.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "die"]);
+        } else if (this.game.canFall(this.x, this.y, true)) {
             this.currentImage.index.walk = -1;
             this.currentImage.index.stand = -1;
             this.currentImage.image = this.game.imageLoader.get(imageType, [(this.direction == 1 ? "forward" : "backward"), "jump"]);

@@ -1,6 +1,8 @@
-import { inject } from 'inversify';
-import { HookNextFunction } from 'mongoose';
+import { decorate, injectable } from 'inversify';
+import { HookNextFunction, Model } from 'mongoose';
 import { ModelType, pre, prop, staticMethod, Typegoose } from 'typegoose';
+
+decorate(injectable(), Typegoose);
 
 import TYPES from '../constant/types';
 import { bindDependencies } from '../container/container';
@@ -18,6 +20,7 @@ const scryptVerifierFactory = (scryptService: ScryptService) => {
 const scryptHasher = bindDependencies(scryptHasherFactory, [TYPES.ScryptService])();
 const scryptVerifier = bindDependencies(scryptVerifierFactory, [TYPES.ScryptService])();
 
+@injectable()
 @pre<User>('save', function(next: HookNextFunction) {
   if (!this._password) {
     return next();
@@ -76,4 +79,5 @@ export class User extends Typegoose {
   }
 }
 
-export const model = new User().getModelForClass(User);
+export type UserModel = Model<InstanceType<any>> & User & typeof User;
+export const userModel: UserModel = new User().getModelForClass(User);

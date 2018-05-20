@@ -74,8 +74,8 @@
     },
     methods: {
       start: function() {
-        let player1 = this.players[0].name || this.players[1].name || null;
-        let player2 = player1 && player1 != this.players[1].name && this.players[1].name;
+        let player1 = (this.players[0].loggedin && this.players[0].name) || (this.players[1].loggedin && this.players[1].name) || null;
+        let player2 = player1 && player1 != this.players[1].name && (this.players[1].loggedin && this.players[1].name);
 
         if(player1) {
           this.game.addPlayer(player1, player2);
